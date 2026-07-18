@@ -1,10 +1,8 @@
 package com.tanzeel.galleryvault.setup;
 
 import com.tanzeel.galleryvault.config.Config;
-import com.tanzeel.galleryvault.exception.DownloadFailedException;
 
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,10 +13,10 @@ import java.util.Scanner;
     Otherwise continue
  */
 public class SetupManager {
+    private static final Path CONFIG_FILE = Paths.get("config.properties");
 
     public boolean isFirstRun() {
-        Path configPath = Paths.get("config.properties");
-        return !Files.exists(configPath);
+        return !Files.exists(CONFIG_FILE);
     }
 
     public void runSetup() {
@@ -34,7 +32,7 @@ public class SetupManager {
     }
 
     public Config loadConfig(){
-
+        // Will implement later
         return new Config();
     }
 

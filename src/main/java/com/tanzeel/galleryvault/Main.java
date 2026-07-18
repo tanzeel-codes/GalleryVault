@@ -6,15 +6,24 @@ import com.tanzeel.galleryvault.exception.DownloadFailedException;
 import com.tanzeel.galleryvault.setup.SetupManager;
 
 import java.io.IOException;
-import java.util.Properties;
 import java.util.Scanner;
 
 public class Main {
+    static Config config;
+
     public static String gettingURL() {
         Scanner sc = new Scanner(System.in);
         System.out.print("Enter URL: ");
 
         return sc.nextLine();
+    }
+
+    public static void showSystemConfiguration() {
+        System.out.println("Application Started");
+
+        System.out.println("Gallery-dl: " + config.getGalleryDlPath());
+        System.out.println("Download: " + config.getDownloadFolder());
+        System.out.println("Cookies: " + config.getCookiesPath());
     }
 
     public static void main(String[] args) {
@@ -31,7 +40,9 @@ public class Main {
         if(setupManager.isFirstRun()) {
             setupManager.runSetup();
         }
-        Config config = setupManager.loadConfig();
+        config = setupManager.loadConfig();
+
+        showSystemConfiguration();
 
         GalleryDownloader downloader = new GalleryDownloader();
 
