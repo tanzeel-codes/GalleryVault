@@ -37,6 +37,39 @@ public class SetupManager {
     }
 
     private String findGalleryDL(Scanner scanner) {
+
+        if(isCommandAvailable("gallery-dl")) return "gallery-dl";
+
+        return askGalleryDLPath(scanner);
+    }
+
+    private String askGalleryDLPath(Scanner scanner) {
+        do{
+            System.out.println("Please Enter path to gallery-dl.exe: ");
+
+            Path path = Paths.get(scanner.nextLine().trim());
+
+            if(!Files.isRegularFile(path)) {
+                System.out.println("Please Enter valid path");
+                continue;
+            }
+
+            if(path.getFileName().toString().equalsIgnoreCase("gallery-dl.exe")) {
+                System.out.println("Please select gallery-dl.exe");
+                continue;
+            }
+
+            if(!isCommandAvailable(path.toString())) {
+                System.out.println("The executable is not working. ");
+                continue;
+            }
+
+            return path.toString();
+
+        } while (true);
+    }
+
+    private boolean isCommandAvailable(String command) {
         try {
             ProcessBuilder processBuilder = new ProcessBuilder("gallery-dl", "--version");
 
