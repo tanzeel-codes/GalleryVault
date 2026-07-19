@@ -2,10 +2,14 @@ package com.tanzeel.galleryvault.setup;
 
 import com.tanzeel.galleryvault.config.Config;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Properties;
 import java.util.Scanner;
 
 /* This class is responsible for set up the configuration
@@ -22,19 +26,19 @@ public class SetupManager {
     public void runSetup() {
         Scanner scanner = new Scanner(System.in);
 
-        String galleryDLPath = findGalleryDL(scanner);
+        String galleryDlCommand = findGalleryDL(scanner);
 
-        String downloadFolder = setDownloadFolder(scanner);
+        Path downloadFolder = askDownloadFolder(scanner);
 
-        String cookiesPath = askCookiesPath(scanner);
+        Path cookiesPath = askCookiesPath(scanner);
 
-        saveConfiguration(galleryDLPath, downloadFolder, cookiesPath);
+        saveConfiguration(galleryDlCommand, downloadFolder, cookiesPath);
     }
 
     public Config loadConfig(){
         Properties properties = new Properties();
 
-        // IMPORTANT STEP IF NOT LOADED WE WONT GET ANYTHING THAT WAS SAVED BEFORE
+        // IMPORTANT STEP IF NOT LOADED WE WON'T GET ANYTHING THAT WAS SAVED BEFORE
         try{
             FileInputStream input = new FileInputStream(CONFIG_FILE.toFile());
 
@@ -96,32 +100,43 @@ public class SetupManager {
 
     private boolean isCommandAvailable(String command) {
         try {
-            ProcessBuilder processBuilder = new ProcessBuilder("gallery-dl", "--version");
+            ProcessBuilder processBuilder = new ProcessBuilder(command, "--version");
 
             Process process = processBuilder.start();
 
             int exitCode = process.waitFor();
 
-            if (exitCode == 0) return "gallery-dl";
+            if (exitCode == 0) return true;
 
         } catch (IOException e) {
             System.out.println("gallery-dl not found in command");
+            return false;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            return false;
         }
-
-        System.out.println("Please Enter path to gallery-dl.exe: ");
-        return scanner.next();
+        return false;
     }
 
-    private String setDownloadFolder(Scanner scanner) {
-        System.out.println("Enter the download location: ");
+    private Path askDownloadFolder(Scanner scanner) {
+        do{
+            System.out.println("Enter the download folder: ");
 
-        return scanner.next();
+            Path path = Paths.get(scanner.nextLine().trim());
+
+            try{
+                Files.createDirectories(path);
+            } catch (IOException e) {
+                System.out.println("Unable to create the folder: " + e.getMessage());
+                continue;
+            }
+            return path;
+        } while(true);
     }
 
-    private String askCookiesPath(Scanner scanner) {
-        return "";
+    private Path askCookiesPath(Scanner scanner) {
+        // TO BE IMPLEMENTED
+        return null;
     }
 
     private void saveConfiguration(String galleryDlCommand, Path downloadFolder, Path cookiesPath) {
