@@ -14,6 +14,7 @@ target/
 *.ipr
 *.jar
 config.properties
+gallery-dl/
 
 ### Eclipse ###
 .apt_generated
@@ -23,7 +24,6 @@ config.properties
 .settings
 .springBeans
 .sts4-cache
-
 
 ### NetBeans ###
 /nbproject/private/
