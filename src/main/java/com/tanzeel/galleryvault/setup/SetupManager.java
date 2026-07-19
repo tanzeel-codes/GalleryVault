@@ -99,6 +99,24 @@ public class SetupManager {
         return "";
     }
 
-    private void saveConfiguration(String galleryDLPath, String downloadFolder, String cookiesPath) {
+    private void saveConfiguration(String galleryDlCommand, Path downloadFolder, Path cookiesPath) {
+        Properties properties = new Properties();
+
+        properties.setProperty("galleryDlCommand", galleryDlCommand);
+
+        properties.setProperty("downloadFolder", downloadFolder.toString());
+
+        if(cookiesPath != null) {
+            properties.setProperty("cookiesPath", cookiesPath.toString());
+        }
+
+        try{
+            FileOutputStream output = new FileOutputStream(CONFIG_FILE.toFile());
+
+            properties.store(output, "GalleryVault configuration");
+
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to save configuration. ", e);
+        }
     }
 }
