@@ -1,32 +1,38 @@
 package com.tanzeel.galleryvault.downloader;
 
 import com.tanzeel.galleryvault.config.Config;
+import com.tanzeel.galleryvault.exception.AuthenticationRequiredException;
 import com.tanzeel.galleryvault.exception.DownloadFailedException;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Properties;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class GalleryDownloader {
-    ArrayList<String> command;
+    private final Config CONFIG;
 
-    public boolean download(String url, Config config) throws IOException, InterruptedException, DownloadFailedException {
-        command = new ArrayList<>();
-        command.add("gallery-dl");
-        command.add(url);
+    public GalleryDownloader(Config config) {
+        this.CONFIG = config;
+    }
 
-//        command.add(config.getProperty("galleryDLPath"));
-
+    public void download(String url) throws IOException, InterruptedException, DownloadFailedException{
         //Create the command (can throw IOException)
-        ProcessBuilder processBuilder = new ProcessBuilder(command);
+        ProcessBuilder processBuilder = new ProcessBuilder(CONFIG.getGalleryDlCommand(), url);
+
+        processBuilder.redirectErrorStream(true);
 
         //Runs the command (can throw InterruptedException)
         Process process = processBuilder.start();
 
+        String output = readStream(process.getInputStream());
+
         //Wait for the command to finish and return its "status"
         int exitCode = process.waitFor();
 
-        //This doesn't throw exception so we use because there maybe some factor the code didn't success
+        validateResult(exitCode, output);
+
+        System.out.println("Downloaded in folder: " + CONFIG.getVaultPath());
     }
 
     private void validateResult(int exitCode, String output) throws DownloadFailedException, AuthenticationRequiredException {
@@ -38,7 +44,7 @@ public class GalleryDownloader {
             throw new AuthenticationRequiredException("Authentication required.");
         }
 
-        return true;
+        throw new DownloadFailedException("gallery-dl failed.\n\n" + output);
     }
 
     private String readStream(InputStream stream) throws IOException {

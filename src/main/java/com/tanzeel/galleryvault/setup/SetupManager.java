@@ -39,30 +39,28 @@ public class SetupManager {
         Properties properties = new Properties();
 
         // IMPORTANT STEP IF NOT LOADED WE WON'T GET ANYTHING THAT WAS SAVED BEFORE
-        try{
-            FileInputStream input = new FileInputStream(CONFIG_FILE.toFile());
+        try (FileInputStream input = new FileInputStream(CONFIG_FILE.toFile())) {
 
             properties.load(input);
+
+            // To get galleryDlCommand
+            String galleryDlCommand = properties.getProperty("galleryDlCommand");
+
+            // To Get the download folder path
+            Path vaultPath = Paths.get(properties.getProperty("downloadFolder"));
+
+            // To get the cookies (if present)
+            Path cookiesPath = null;
+            if(properties.getProperty("cookiesPath") != null) {
+                cookiesPath = Paths.get(properties.getProperty("cookiesPath"));
+            }
+
+            return new Config(galleryDlCommand, vaultPath, cookiesPath);
 
         } catch (IOException e) {
             throw new RuntimeException("Unable to load configuration.", e);
         }
 
-        // To get galleryDlCommand
-        String galleryDlCommand = properties.getProperty("galleryDlCommand");
-
-        // To Get the download folder path
-        String folder = properties.getProperty("downloadFolder");
-        Path downloadFolder = Paths.get(folder);
-
-        // To get the cookies (if present)
-        String cookies = properties.getProperty("cookiesPath");
-        Path cookiesPath = null;
-        if(cookies != null) {
-            cookiesPath = Paths.get(cookies);
-        }
-
-        return new Config(galleryDlCommand, downloadFolder, cookiesPath);
     }
 
     private String findGalleryDL(Scanner scanner) {
@@ -143,7 +141,7 @@ public class SetupManager {
 
         while(true) {
             System.out.println("Cookies path: ");
-             
+
             Path path = Paths.get(scanner.nextLine());
 
             if(Files.isRegularFile(path)) return path;
@@ -152,20 +150,18 @@ public class SetupManager {
         }
     }
 
-    private void saveConfiguration(String galleryDlCommand, Path downloadFolder, Path cookiesPath) {
+    private void saveConfiguration(String galleryDlCommand, Path vaultPath, Path cookiesPath) {
         Properties properties = new Properties();
 
         properties.setProperty("galleryDlCommand", galleryDlCommand);
 
-        properties.setProperty("downloadFolder", downloadFolder.toString());
+        properties.setProperty("downloadFolder", vaultPath.toString());
 
         if(cookiesPath != null) {
             properties.setProperty("cookiesPath", cookiesPath.toString());
         }
 
-        try{
-            FileOutputStream output = new FileOutputStream(CONFIG_FILE.toFile());
-
+        try(FileOutputStream output = new FileOutputStream(CONFIG_FILE.toFile())) {
             properties.store(output, "GalleryVault configuration");
 
         } catch (IOException e) {

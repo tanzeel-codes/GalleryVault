@@ -25,14 +25,15 @@ public class Main {
         if(setupManager.isFirstRun()) {
             setupManager.runSetup();
         }
+
         config = setupManager.loadConfig();
 
         showSystemConfiguration();
 
-        GalleryDownloader downloader = new GalleryDownloader();
+        GalleryDownloader downloader = new GalleryDownloader(config);
 
         try {
-            downloader.download(url, config);
+            downloader.download(url);
         } catch (IOException | InterruptedException | DownloadFailedException e) {
             System.out.println(e.getMessage());
         }
@@ -49,7 +50,7 @@ public class Main {
         System.out.println("Application Started");
 
         System.out.println("Gallery-dl: " + config.getGalleryDlCommand());
-        System.out.println("Download: " + config.getDownloadFolder());
+        System.out.println("Download: " + config.getVaultPath());
         System.out.println("Cookies: " + config.getCookiesPath());
     }
 }
