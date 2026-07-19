@@ -1,5 +1,7 @@
 package com.tanzeel.galleryvault.config;
 
+import java.nio.file.Path;
+
 public class Config {
     private String galleryDlCommand;
     private Path downloadFolder;
@@ -10,33 +12,33 @@ public class Config {
 
     }
 
-    public Config(String galleryDlPath, String downloadFolder, String cookiesPath) {
-        this.galleryDlPath = galleryDlPath;
+    public Config(String galleryDlCommand, Path downloadFolder, Path cookiesPath) {
+        this.galleryDlCommand = galleryDlCommand;
         this.downloadFolder = downloadFolder;
         this.cookiesPath = cookiesPath;
     }
 
-    public String getGalleryDlPath() {
-        return galleryDlPath;
+    public String getGalleryDlCommand() {
+        return galleryDlCommand;
     }
 
-    public void setGalleryDlPath(String galleryDlPath) {
-        this.galleryDlPath = galleryDlPath;
+    public void setGalleryDlCommand(String galleryDlCommand) {
+        this.galleryDlCommand = galleryDlCommand;
     }
 
-    public String getDownloadFolder() {
+    public Path getDownloadFolder() {
         return downloadFolder;
     }
 
-    public void setDownloadFolder(String downloadFolder) {
+    public void setDownloadFolder(Path downloadFolder) {
         this.downloadFolder = downloadFolder;
     }
 
-    public String getCookiesPath() {
+    public Path getCookiesPath() {
         return cookiesPath;
     }
 
-    public void setCookiesPath(String cookiesPath) {
+    public void setCookiesPath(Path cookiesPath) {
         this.cookiesPath = cookiesPath;
     }
 
