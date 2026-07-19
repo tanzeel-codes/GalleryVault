@@ -1,9 +1,9 @@
 package com.tanzeel.galleryvault.config;
 
 public class Config {
-    private String galleryDlPath;
-    private String downloadFolder;
-    private String cookiesPath;
+    private String galleryDlCommand;
+    private Path downloadFolder;
+    private Path cookiesPath;
     private String archiveFolder;
 
     public Config() {
