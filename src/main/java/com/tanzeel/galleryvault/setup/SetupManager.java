@@ -32,8 +32,33 @@ public class SetupManager {
     }
 
     public Config loadConfig(){
-        // Will implement later
-        return new Config();
+        Properties properties = new Properties();
+
+        // IMPORTANT STEP IF NOT LOADED WE WONT GET ANYTHING THAT WAS SAVED BEFORE
+        try{
+            FileInputStream input = new FileInputStream(CONFIG_FILE.toFile());
+
+            properties.load(input);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to load configuration.", e);
+        }
+
+        // To get galleryDlCommand
+        String galleryDlCommand = properties.getProperty("galleryDlCommand");
+
+        // To Get the download folder path
+        String folder = properties.getProperty("downloadFolder");
+        Path downloadFolder = Paths.get(folder);
+
+        // To get the cookies (if present)
+        String cookies = properties.getProperty("cookiesPath");
+        Path cookiesPath = null;
+        if(cookies != null) {
+            cookiesPath = Paths.get(cookies);
+        }
+
+        return new Config(galleryDlCommand, downloadFolder, cookiesPath);
     }
 
     private String findGalleryDL(Scanner scanner) {
