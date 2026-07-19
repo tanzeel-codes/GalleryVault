@@ -27,13 +27,15 @@ public class GalleryDownloader {
         int exitCode = process.waitFor();
 
         //This doesn't throw exception so we use because there maybe some factor the code didn't success
-        if(exitCode != 0) {
-            /* 0 - Success
-               1 -
-               2 -
-               3 -
-             */
-            throw new DownloadFailedException("gallery-dl failed with exit code: " + exitCode);
+    }
+
+    private void validateResult(int exitCode, String output) throws DownloadFailedException, AuthenticationRequiredException {
+        if(exitCode == 0) return;
+
+        output =  output.toLowerCase();
+
+        if(output.contains("authentication")) {
+            throw new AuthenticationRequiredException("Authentication required.");
         }
 
         return true;
