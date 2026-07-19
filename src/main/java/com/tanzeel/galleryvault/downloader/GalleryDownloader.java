@@ -38,4 +38,20 @@ public class GalleryDownloader {
 
         return true;
     }
+
+    private String readStream(InputStream stream) throws IOException {
+        StringBuilder output = new StringBuilder();
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
+            String line;
+
+            while((line = reader.readLine()) != null) {
+                output.append(line)
+                      .append(System.lineSeparator());
+
+            }
+        }
+
+        return output.toString();
+    }
 }
