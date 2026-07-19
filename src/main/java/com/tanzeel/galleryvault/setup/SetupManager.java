@@ -135,8 +135,21 @@ public class SetupManager {
     }
 
     private Path askCookiesPath(Scanner scanner) {
-        // TO BE IMPLEMENTED
-        return null;
+        System.out.println("Do you have cookies? (Y/S): ");
+
+        String ans = scanner.nextLine();
+
+        if(!ans.equalsIgnoreCase("Y")) return null;
+
+        while(true) {
+            System.out.println("Cookies path: ");
+             
+            Path path = Paths.get(scanner.nextLine());
+
+            if(Files.isRegularFile(path)) return path;
+
+            System.out.println("Invalid cookies file. ");
+        }
     }
 
     private void saveConfiguration(String galleryDlCommand, Path downloadFolder, Path cookiesPath) {
