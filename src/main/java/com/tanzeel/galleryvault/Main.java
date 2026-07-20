@@ -10,40 +10,58 @@ import java.util.Scanner;
 
 public class Main {
     static Config config;
+    static Scanner sc;
 
     public static void main(String[] args) {
-        String url = gettingURL();
-
-        // Checks whether url is provided or not
-        if(url.isBlank()) {
-            System.out.println("URL cannot be empty.");
-            return;
-        }
+        sc = new Scanner(System.in);
 
         SetupManager setupManager = new SetupManager();
 
+        // IF THE SETUP HASN'T DONE YET WE WILL RUN THIS
         if(setupManager.isFirstRun()) {
             setupManager.runSetup();
         }
 
         config = setupManager.loadConfig();
 
+        // PRINTS ALL THE CONFIGURATION
         showSystemConfiguration();
 
-        GalleryDownloader downloader = new GalleryDownloader(config);
+        // DOWNLOAD THE FILES
+        download();
 
-        try {
-            downloader.download(url);
-        } catch (IOException | InterruptedException | DownloadFailedException e) {
-            System.out.println(e.getMessage());
-        }
+        System.out.println("Thank you!");
     }
 
     public static String gettingURL() {
-        Scanner sc = new Scanner(System.in);
         System.out.print("Enter URL: ");
 
         return sc.nextLine();
+    }
+
+    public static void download() {
+        String ans = "N";
+        do {
+            String url = gettingURL();
+
+            // Checks whether url is provided or not
+            if(url.isBlank()) {
+                System.out.println("URL cannot be empty... try again");
+                continue;
+            }
+
+            GalleryDownloader downloader = new GalleryDownloader(config);
+
+            try {
+                downloader.download(url);
+            } catch (IOException | InterruptedException | DownloadFailedException e) {
+                System.out.println(e.getMessage());
+            }
+
+            System.out.println("DO you want to continue downloading? (Y/N)");
+            ans = sc.nextLine();
+
+        } while (ans.toLowerCase().startsWith("y"));
     }
 
     public static void showSystemConfiguration() {
