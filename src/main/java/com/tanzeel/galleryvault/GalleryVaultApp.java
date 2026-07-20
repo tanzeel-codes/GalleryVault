@@ -4,7 +4,6 @@ import com.tanzeel.galleryvault.config.Config;
 import com.tanzeel.galleryvault.downloader.GalleryDownloader;
 import com.tanzeel.galleryvault.exception.DownloadFailedException;
 
-import java.io.IOException;
 import java.util.Scanner;
 
 public class GalleryVaultApp {
@@ -36,13 +35,17 @@ public class GalleryVaultApp {
 
             if(url.equalsIgnoreCase("exit")) break;
 
-            if(!url.startsWith("https")) {
+            // Checks the provided url is correct or some random string
+            if(!url.startsWith("https://")) {
                 System.out.println("Please enter correct url... try again");
                 continue;
             }
 
             try {
                 downloader.download(url);
+
+                System.out.println("Download Complete");
+
             } catch (DownloadFailedException e) {
                 System.out.println(e.getMessage());
             }
@@ -51,10 +54,14 @@ public class GalleryVaultApp {
 
     // PRINTS ALL THE CONFIGURATION
     private void showSystemConfiguration() {
-        System.out.println("======GalleryVault======");
+        System.out.println("==========GalleryVault==========\n");
 
         System.out.println("Gallery-dl  : " + config.getGalleryDlCommand());
         System.out.println("Download    : " + config.getVaultPath());
-        System.out.println("Cookies     : " + config.getCookiesPath());
+        System.out.println("Cookies     : " + config.getCookiesPath() + "\n");
+
+        System.out.println("Type 'exit' anytime to quit\n");
+
+        System.out.println("-------------------------------------------");
     }
 }
