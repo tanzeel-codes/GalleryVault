@@ -43,6 +43,25 @@ public class GalleryDownloader {
         System.out.println("Downloaded in folder: " + CONFIG.getVaultPath());
     }
 
+    private List<String> buildCommand(String url) {
+        List<String> command = new ArrayList<>();
+
+        command.add(config.getGalleryDlCommand());
+        command.add(DIRECTORY_OPTION);          // command for gallery-dl to identify
+        command.add(config.getDownloadPath().toString());
+        command.add(url);
+        // WILL BE ADDING MORE
+
+        return command;
+    }
+
+   private Process executeCommand(List<String> commands) throws IOException {
+        ProcessBuilder processBuilder = new ProcessBuilder(commands);      //Create the command (can throw IOException)
+        processBuilder.redirectErrorStream(true);
+
+        return processBuilder.start();                                       //Runs the command (can throw InterruptedException)
+   }
+
     /*
     STILL HAS SOMETHING TO DO WITH VALIDATE RESULT (WILL DO LATER)
      */
