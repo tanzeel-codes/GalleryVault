@@ -65,15 +65,21 @@ public class GalleryDownloader {
     /*
     STILL HAS SOMETHING TO DO WITH VALIDATE RESULT (WILL DO LATER)
      */
-//    private void validateResult(int exitCode, String output) throws DownloadFailedException, AuthenticationRequiredException {
-//        if(exitCode == 0) return;
-//
-//        output =  output.toLowerCase();
-//
-//        if(output.contains("authentication")) {
-//            throw new AuthenticationRequiredException("Authentication required.");
-//        }
-//    }
+    private void validateResult(int exitCode, String output) throws DownloadFailedException {
+        if(exitCode == 0) return;
+
+        String normalizedOutput = output.toLowerCase();
+
+        if(normalizedOutput.contains(UNSUPPORTED_URL)) {
+            throw new DownloadFailedException("Unsupported URL.\n\n" + output);
+        }
+
+        if(normalizedOutput.contains("403") || normalizedOutput.contains(AUTHENTICATION) || normalizedOutput.contains(FORBIDDEN)) {
+            throw new AuthenticationRequiredException("Authentication required. Please check your cookies\n\n" + output);
+        }
+
+        throw new DownloadFailedException("Download failed.\n\n" + output);
+    }
 
     private String readStream(InputStream stream) throws IOException {
         StringBuilder output = new StringBuilder();
