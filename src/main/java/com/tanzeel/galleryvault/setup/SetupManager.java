@@ -3,7 +3,6 @@ package com.tanzeel.galleryvault.setup;
 import com.tanzeel.galleryvault.config.Config;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,9 +11,14 @@ import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.Scanner;
 
-/* This class is responsible for set up the configuration
-    If the run is firs time ->  we go for setup
-    Otherwise continue
+/* This class is responsible for -
+
+    ~Set up the configuration for first time
+    ~Ask for downloadPath, cookiesPath and so on
+    ~Save the configuration
+    ~Loads all the data to config.properties
+    ~Update the config.properties (TO DO)
+
  */
 public class SetupManager {
     private static final Path CONFIG_FILE = Paths.get("config.properties");
@@ -43,19 +47,16 @@ public class SetupManager {
 
             properties.load(input);
 
-            // To get galleryDlCommand
-            String galleryDlCommand = properties.getProperty("galleryDlCommand");
+            String galleryDlCommand = properties.getProperty("galleryDlCommand");           // To get galleryDlCommand
 
-            // To Get the download folder path
-            Path vaultPath = Paths.get(properties.getProperty("downloadFolder"));
+            Path downloadPath = Paths.get(properties.getProperty("downloadFolder"));        // To get the download path
 
-            // To get the cookies (if present)
-            Path cookiesPath = null;
+            Path cookiesPath = null;                                                        // To get the cookies (if present)
             if(properties.getProperty("cookiesPath") != null) {
                 cookiesPath = Paths.get(properties.getProperty("cookiesPath"));
             }
 
-            return new Config(galleryDlCommand, vaultPath, cookiesPath);
+            return new Config(galleryDlCommand, downloadPath, cookiesPath);
 
         } catch (IOException e) {
             throw new RuntimeException("Unable to load configuration.", e);
@@ -150,12 +151,12 @@ public class SetupManager {
         }
     }
 
-    private void saveConfiguration(String galleryDlCommand, Path vaultPath, Path cookiesPath) {
+    private void saveConfiguration(String galleryDlCommand, Path downloadPath, Path cookiesPath) {
         Properties properties = new Properties();
 
         properties.setProperty("galleryDlCommand", galleryDlCommand);
 
-        properties.setProperty("downloadFolder", vaultPath.toString());
+        properties.setProperty("downloadFolder", downloadPath.toString());
 
         if(cookiesPath != null) {
             properties.setProperty("cookiesPath", cookiesPath.toString());
@@ -168,4 +169,24 @@ public class SetupManager {
             throw new RuntimeException("Unable to save configuration. ", e);
         }
     }
+
+            // TO DO //
+    private void updateConfiguration(Config config) {
+        /*
+        TO DO -
+        update the updatable things ex - cookies, downloadPath or so on (things added in future)
+         */
+        Properties properties = new Properties();
+
+        try(FileInputStream input = new FileInputStream(CONFIG_FILE.toFile())) {
+            properties.load(input);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /*
+    Also thinking of something about passing the gallerydlcommand, downloadpath, cookies in methods
+    otherwise its gonna be filled with things if more things added in future
+     */
 }

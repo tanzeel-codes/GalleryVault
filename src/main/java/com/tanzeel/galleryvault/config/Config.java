@@ -4,7 +4,7 @@ import java.nio.file.Path;
 
 public class Config {
     private String galleryDlCommand;
-    private Path vaultPath;
+    private Path downloadPath;
     private Path cookiesPath;
     private String archiveFolder;
 
@@ -12,9 +12,9 @@ public class Config {
 
     }
 
-    public Config(String galleryDlCommand, Path vaultPath, Path cookiesPath) {
+    public Config(String galleryDlCommand, Path downloadPath, Path cookiesPath) {
         this.galleryDlCommand = galleryDlCommand;
-        this.vaultPath = vaultPath;
+        this.downloadPath = downloadPath;
         this.cookiesPath = cookiesPath;
     }
 
@@ -22,8 +22,8 @@ public class Config {
         return galleryDlCommand;
     }
 
-    public Path getVaultPath() {
-        return vaultPath;
+    public Path getDownloadPath() {
+        return downloadPath;
     }
 
     public Path getCookiesPath() {

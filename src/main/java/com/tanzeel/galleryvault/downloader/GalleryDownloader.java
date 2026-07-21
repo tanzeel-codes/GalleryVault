@@ -1,6 +1,7 @@
 package com.tanzeel.galleryvault.downloader;
 
 import com.tanzeel.galleryvault.config.Config;
+import com.tanzeel.galleryvault.exception.AuthenticationRequiredException;
 import com.tanzeel.galleryvault.exception.DownloadFailedException;
 
 import java.io.BufferedReader;
@@ -11,36 +12,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GalleryDownloader {
-    private final Config CONFIG;
+    private static final String AUTHENTICATION = "authentication";
+    private static final String FORBIDDEN = "forbidden";
+    private static final String UNSUPPORTED_URL = "unsupported url";
+    private static final String DIRECTORY_OPTION = "--directory";
+//    private static final String COOKIES_OPTION = "--cookies";
+    private final Config config;
 
     public GalleryDownloader(Config config) {
-        this.CONFIG = config;
+        this.config = config;
     }
 
     public void download(String url) throws DownloadFailedException {
-        List<String> command = new ArrayList<>();
         try {
-            //Create the command (can throw IOException)
-            ProcessBuilder processBuilder = new ProcessBuilder(CONFIG.getGalleryDlCommand(), url);
+            List<String> command = buildCommand(url);
 
-            processBuilder.redirectErrorStream(true);
-
-            //Runs the command (can throw InterruptedException)
-            Process process = processBuilder.start();
+            Process process = executeCommand(command);
 
             String output = readStream(process.getInputStream());
 
-            //Wait for the command to finish and return its "status"
-            int exitCode = process.waitFor();
+            int exitCode = process.waitFor();                                           // Wait for the command to finish and return its "status"
 
-//            validateResult(exitCode, output);
+            validateResult(exitCode, output);
+
         } catch (IOException e) {
             throw new DownloadFailedException("Unable to start gallery-dl", e);
+
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new DownloadFailedException("Download Interrupted", e);
         }
-
-        System.out.println("Downloaded in folder: " + CONFIG.getVaultPath());
     }
 
     private List<String> buildCommand(String url) {
@@ -59,12 +60,9 @@ public class GalleryDownloader {
         ProcessBuilder processBuilder = new ProcessBuilder(commands);      //Create the command (can throw IOException)
         processBuilder.redirectErrorStream(true);
 
-        return processBuilder.start();                                       //Runs the command (can throw InterruptedException)
+        return processBuilder.start();                                     //Runs the command (can throw InterruptedException)
    }
 
-    /*
-    STILL HAS SOMETHING TO DO WITH VALIDATE RESULT (WILL DO LATER)
-     */
     private void validateResult(int exitCode, String output) throws DownloadFailedException {
         if(exitCode == 0) return;
 
