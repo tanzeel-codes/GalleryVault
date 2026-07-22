@@ -4,18 +4,24 @@ import com.tanzeel.galleryvault.config.Config;
 import com.tanzeel.galleryvault.downloader.GalleryDownloader;
 import com.tanzeel.galleryvault.exception.AuthenticationRequiredException;
 import com.tanzeel.galleryvault.exception.DownloadFailedException;
+import com.tanzeel.galleryvault.history.DownloadRecord;
+import com.tanzeel.galleryvault.history.DownloadStatus;
+import com.tanzeel.galleryvault.history.HistoryManager;
 
+import java.time.LocalDateTime;
 import java.util.Scanner;
 
 public class GalleryVaultApp {
     private final Scanner scanner;
     private final Config config;
     private final GalleryDownloader downloader;
+    private final HistoryManager historyManager;
 
     public GalleryVaultApp(Config config) {
         this.config = config;
         this.downloader = new GalleryDownloader(config);
         this.scanner = new Scanner(System.in);
+        this.historyManager = new HistoryManager();
     }
 
     public void start() {
@@ -44,15 +50,33 @@ public class GalleryVaultApp {
             System.out.println("Downloading...");
             System.out.println();
 
+            DownloadRecord record = null;
+            LocalDateTime timestamp = LocalDateTime.now();
             try {
                 downloader.download(url);                                           // actual start
+
+                record = new DownloadRecord(
+                        url,
+                        timestamp,
+                        DownloadStatus.SUCCESS,
+                        null
+                );
+
                 System.out.println("✓ Download Completed Successfully.");
 
             } catch (DownloadFailedException e) {
 
+                record = new DownloadRecord(
+                        url,
+                        timestamp,
+                        DownloadStatus.FAILED,
+                        e.getMessage()
+                );
+
                 showError(e);
 
             } finally {
+                if(record != null ) historyManager.save(record);
                 System.out.println("-------------------------------------------");
             }
         }

@@ -21,7 +21,8 @@ import java.util.Scanner;
 
  */
 public class SetupManager {
-    private static final Path CONFIG_FILE = Paths.get("config.properties");
+    private static final Path APP_DIRECTORY = Paths.get(System.getProperty("user.home"), ".gallery-vault");
+    private static final Path CONFIG_FILE = APP_DIRECTORY.resolve("config.properties");
 
     public boolean isFirstRun() {
         return !Files.exists(CONFIG_FILE);
@@ -161,10 +162,13 @@ public class SetupManager {
         if(cookiesPath != null) {
             properties.setProperty("cookiesPath", cookiesPath.toString());
         }
+        try {
+            Files.createDirectories(APP_DIRECTORY);
 
-        try(FileOutputStream output = new FileOutputStream(CONFIG_FILE.toFile())) {
-            properties.store(output, "GalleryVault configuration");
+            try(FileOutputStream output = new FileOutputStream(CONFIG_FILE.toFile())) {
+                properties.store(output, "GalleryVault configuration");
 
+            }
         } catch (IOException e) {
             throw new RuntimeException("Unable to save configuration. ", e);
         }
@@ -175,6 +179,7 @@ public class SetupManager {
         /*
         TO DO -
         update the updatable things ex - cookies, downloadPath or so on (things added in future)
+        below is just a design
          */
         Properties properties = new Properties();
 
@@ -186,7 +191,7 @@ public class SetupManager {
     }
 
     /*
-    Also thinking of something about passing the gallerydlcommand, downloadpath, cookies in methods
-    otherwise its gonna be filled with things if more things added in future
+    Also thinking of something about passing the gallery-dlCommand, downloadPath, cookies in methods
+    otherwise it's gonna be filled with things if more things added in future
      */
 }

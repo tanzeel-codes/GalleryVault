@@ -3,10 +3,10 @@ package com.tanzeel.galleryvault.history;
 import java.time.LocalDateTime;
 
 public class DownloadRecord {
-    private String url;
-    private LocalDateTime timeStamp;
-    private DownloadStatus status;
-    private String reason;
+    private final String url;
+    private final LocalDateTime timestamp;
+    private final DownloadStatus status;
+    private final String reason;
     private String platform;
 
     public DownloadRecord(String url, LocalDateTime timestamp, DownloadStatus status, String reason) {

@@ -16,7 +16,7 @@ public class GalleryDownloader {
     private static final String FORBIDDEN = "forbidden";
     private static final String UNSUPPORTED_URL = "unsupported url";
     private static final String DIRECTORY_OPTION = "--directory";
-//    private static final String COOKIES_OPTION = "--cookies";
+    private static final String COOKIES_OPTION = "--cookies";
     private final Config config;
 
     public GalleryDownloader(Config config) {
@@ -45,6 +45,7 @@ public class GalleryDownloader {
     }
 
     private List<String> buildCommand(String url) {
+
         List<String> command = new ArrayList<>();
 
         command.add(config.getGalleryDlCommand());
@@ -57,6 +58,7 @@ public class GalleryDownloader {
     }
 
    private Process executeCommand(List<String> commands) throws IOException {
+
         ProcessBuilder processBuilder = new ProcessBuilder(commands);      //Create the command (can throw IOException)
         processBuilder.redirectErrorStream(true);
 
@@ -64,6 +66,7 @@ public class GalleryDownloader {
    }
 
     private void validateResult(int exitCode, String output) throws DownloadFailedException {
+
         if(exitCode == 0) return;
 
         String normalizedOutput = output.toLowerCase();
@@ -80,6 +83,7 @@ public class GalleryDownloader {
     }
 
     private String readStream(InputStream stream) throws IOException {
+
         StringBuilder output = new StringBuilder();
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
