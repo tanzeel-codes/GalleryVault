@@ -23,30 +23,40 @@ import java.util.Scanner;
 public class SetupManager {
     private static final Path APP_DIRECTORY = Paths.get(System.getProperty("user.home"), ".gallery-vault");
     private static final Path CONFIG_FILE = APP_DIRECTORY.resolve("config.properties");
+    private Config config;
+    private final Scanner scanner = new Scanner(System.in);
 
-    public boolean isFirstRun() {
-        return !Files.exists(CONFIG_FILE);
+    public void isFirstRun() {
+        if(Files.exists(CONFIG_FILE)) return;
+
+        runSetup();
     }
 
     public void runSetup() {
-        Scanner scanner = new Scanner(System.in);
 
         String galleryDlCommand = findGalleryDL(scanner);
 
-        Path downloadFolder = askDownloadFolder(scanner);
+        Path downloadFolder = askDownloadFolder();
 
-        Path cookiesPath = askCookiesPath(scanner);
+        Path cookiesPath = askCookiesPath();
 
-        saveConfiguration(galleryDlCommand, downloadFolder, cookiesPath);
+        config = new Config(
+                galleryDlCommand,
+                downloadFolder,
+                cookiesPath
+        );
+
+        saveConfiguration();
     }
 
     public Config loadConfig(){
+
         Properties properties = new Properties();
 
         // IMPORTANT STEP IF NOT LOADED WE WON'T GET ANYTHING THAT WAS SAVED BEFORE
         try (FileInputStream input = new FileInputStream(CONFIG_FILE.toFile())) {
 
-            properties.load(input);
+            properties.load(input);                                                         // Loads the file
 
             String galleryDlCommand = properties.getProperty("galleryDlCommand");           // To get galleryDlCommand
 
@@ -55,12 +65,14 @@ public class SetupManager {
             Path cookiesPath = null;                                                        // To get the cookies (if present)
             if(properties.getProperty("cookiesPath") != null) {
                 cookiesPath = Paths.get(properties.getProperty("cookiesPath"));
+
             }
 
             return new Config(galleryDlCommand, downloadPath, cookiesPath);
 
         } catch (IOException e) {
             throw new RuntimeException("Unable to load configuration.", e);
+
         }
 
     }
@@ -73,7 +85,7 @@ public class SetupManager {
     }
 
     private String askGalleryDLPath(Scanner scanner) {
-        do{
+        while (true) {
             System.out.println("Please Enter path to gallery-dl.exe: ");
 
             Path path = Paths.get(scanner.nextLine().trim());
@@ -95,7 +107,7 @@ public class SetupManager {
 
             return path.toString();
 
-        } while (true);
+        }
     }
 
     private boolean isCommandAvailable(String command) {
@@ -118,31 +130,35 @@ public class SetupManager {
         return false;
     }
 
-    private Path askDownloadFolder(Scanner scanner) {
-        do{
-            System.out.println("Enter the download folder: ");
+    private Path askDownloadFolder() {
+
+        while(true) {
+            System.out.print("Enter the download folder: ");
 
             Path path = Paths.get(scanner.nextLine().trim());
 
             try{
                 Files.createDirectories(path);
+
             } catch (IOException e) {
                 System.out.println("Unable to create the folder: " + e.getMessage());
                 continue;
+
             }
             return path;
-        } while(true);
+
+        }
     }
 
-    private Path askCookiesPath(Scanner scanner) {
-        System.out.println("Do you have cookies? (Y/S): ");
+    private Path askCookiesPath() {
+        System.out.println("Do you have cookies? (Y/N): ");
 
         String ans = scanner.nextLine();
 
         if(!ans.equalsIgnoreCase("Y")) return null;
 
         while(true) {
-            System.out.println("Cookies path: ");
+            System.out.println("Enter cookies path: ");
 
             Path path = Paths.get(scanner.nextLine());
 
@@ -152,46 +168,72 @@ public class SetupManager {
         }
     }
 
-    private void saveConfiguration(String galleryDlCommand, Path downloadPath, Path cookiesPath) {
+    private void saveConfiguration() {
+
         Properties properties = new Properties();
 
-        properties.setProperty("galleryDlCommand", galleryDlCommand);
+        properties.setProperty("galleryDlCommand", config.getGalleryDlCommand());
 
-        properties.setProperty("downloadFolder", downloadPath.toString());
+        properties.setProperty("downloadFolder", config.getDownloadPath().toString());
 
-        if(cookiesPath != null) {
-            properties.setProperty("cookiesPath", cookiesPath.toString());
+        if(config.getCookiesPath() != null) {
+            properties.setProperty("cookiesPath", config.getCookiesPath().toString());
+
         }
         try {
             Files.createDirectories(APP_DIRECTORY);
 
             try(FileOutputStream output = new FileOutputStream(CONFIG_FILE.toFile())) {
-                properties.store(output, "GalleryVault configuration");
+                properties.store(output, "GalleryVault configuration");         // saves the file
 
             }
         } catch (IOException e) {
             throw new RuntimeException("Unable to save configuration. ", e);
+
         }
     }
 
-            // TO DO //
-    private void updateConfiguration(Config config) {
-        /*
-        TO DO -
-        update the updatable things ex - cookies, downloadPath or so on (things added in future)
-        below is just a design
-         */
+    public void updateConfiguration() {
+
         Properties properties = new Properties();
 
         try(FileInputStream input = new FileInputStream(CONFIG_FILE.toFile())) {
             properties.load(input);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+
+        }
+        System.out.println("Do you want to update download path? (Y/N)");
+        String choice = scanner.nextLine();
+
+        if(choice.equalsIgnoreCase("Y")) {
+            properties.setProperty("downloadFolder", askDownloadFolder().toString());
+
+        }
+
+        System.out.println("Do you want to update cookies path? (Y/N)");
+        choice = scanner.nextLine();
+
+        if(choice.equalsIgnoreCase("Y")) {
+            Path cookies = askCookiesPath();
+
+            if(cookies != null) {
+                properties.setProperty("cookiesPath", cookies.toString());
+
+            }
+
+        }
+
+        try{
+            Files.createDirectories(APP_DIRECTORY);
+
+            try(FileOutputStream output = new FileOutputStream(CONFIG_FILE.toFile())) {
+                properties.store(output, "GalleryVault configuration");             // Saves the file
+
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-
-    /*
-    Also thinking of something about passing the gallery-dlCommand, downloadPath, cookies in methods
-    otherwise it's gonna be filled with things if more things added in future
-     */
 }

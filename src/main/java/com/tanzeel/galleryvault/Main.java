@@ -8,11 +8,9 @@ public class Main {
 
         SetupManager setupManager = new SetupManager();
 
-        if(setupManager.isFirstRun()) {             // IF THE SETUP HASN'T DONE YET WE WILL RUN THIS
-            setupManager.runSetup();
-        }
+        setupManager.isFirstRun();            // IF THE SETUP HASN'T DONE YET WE WILL RUN THIS
 
-        Config config = setupManager.loadConfig();
+        Config config = setupManager.loadConfig();  // READS THE DATA FROM CONFIG.PROPERTIES
 
         GalleryVaultApp app = new GalleryVaultApp(config);
         app.start();
