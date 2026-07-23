@@ -23,8 +23,11 @@ import java.util.Scanner;
 public class SetupManager {
     private static final Path APP_DIRECTORY = Paths.get(System.getProperty("user.home"), ".gallery-vault");
     private static final Path CONFIG_FILE = APP_DIRECTORY.resolve("config.properties");
-    private Config config;
-    private final Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner;
+
+    public SetupManager(Scanner scanner) {
+        this.scanner = scanner;
+    }
 
     public void isFirstRun() {
         if(Files.exists(CONFIG_FILE)) return;
@@ -34,50 +37,22 @@ public class SetupManager {
 
     public void runSetup() {
 
-        String galleryDlCommand = findGalleryDL(scanner);
+        String galleryDlCommand = resolveGalleryDlCommand(scanner);
 
         Path downloadFolder = askDownloadFolder();
 
         Path cookiesPath = askCookiesPath();
 
-        config = new Config(
+        Config config = new Config(
                 galleryDlCommand,
                 downloadFolder,
                 cookiesPath
         );
 
-        saveConfiguration();
+        saveConfiguration(config);
     }
 
-    public Config loadConfig(){
-
-        Properties properties = new Properties();
-
-        // IMPORTANT STEP IF NOT LOADED WE WON'T GET ANYTHING THAT WAS SAVED BEFORE
-        try (FileInputStream input = new FileInputStream(CONFIG_FILE.toFile())) {
-
-            properties.load(input);                                                         // Loads the file
-
-            String galleryDlCommand = properties.getProperty("galleryDlCommand");           // To get galleryDlCommand
-
-            Path downloadPath = Paths.get(properties.getProperty("downloadFolder"));        // To get the download path
-
-            Path cookiesPath = null;                                                        // To get the cookies (if present)
-            if(properties.getProperty("cookiesPath") != null) {
-                cookiesPath = Paths.get(properties.getProperty("cookiesPath"));
-
-            }
-
-            return new Config(galleryDlCommand, downloadPath, cookiesPath);
-
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to load configuration.", e);
-
-        }
-
-    }
-
-    private String findGalleryDL(Scanner scanner) {
+    private String resolveGalleryDlCommand(Scanner scanner) {
 
         if(isCommandAvailable("gallery-dl")) return "gallery-dl";
 
@@ -95,7 +70,7 @@ public class SetupManager {
                 continue;
             }
 
-            if(path.getFileName().toString().equalsIgnoreCase("gallery-dl.exe")) {
+            if(!path.getFileName().toString().equalsIgnoreCase("gallery-dl.exe")) {
                 System.out.println("Please select gallery-dl.exe");
                 continue;
             }
@@ -168,7 +143,7 @@ public class SetupManager {
         }
     }
 
-    private void saveConfiguration() {
+    private void saveConfiguration(Config config) {
 
         Properties properties = new Properties();
 
@@ -180,35 +155,43 @@ public class SetupManager {
             properties.setProperty("cookiesPath", config.getCookiesPath().toString());
 
         }
-        try {
-            Files.createDirectories(APP_DIRECTORY);
+        saveProperties(properties);
 
-            try(FileOutputStream output = new FileOutputStream(CONFIG_FILE.toFile())) {
-                properties.store(output, "GalleryVault configuration");         // saves the file
+    }
 
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to save configuration. ", e);
+    public Config loadConfig(){
+
+        Properties properties = new Properties();
+
+        loadProperties(properties);
+
+        String galleryDlCommand = properties.getProperty("galleryDlCommand");           // To get galleryDlCommand
+
+        Path downloadPath = Paths.get(properties.getProperty("downloadFolder"));        // To get the download path
+
+        Path cookiesPath = null;                                                        // To get the cookies (if present)
+        if(properties.getProperty("cookiesPath") != null) {
+            cookiesPath = Paths.get(properties.getProperty("cookiesPath"));
 
         }
+
+        return new Config(galleryDlCommand, downloadPath, cookiesPath);
+
     }
 
     public void updateConfiguration() {
 
         Properties properties = new Properties();
 
-        try(FileInputStream input = new FileInputStream(CONFIG_FILE.toFile())) {
-            properties.load(input);
+        loadProperties(properties);
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-
-        }
         System.out.println("Do you want to update download path? (Y/N)");
         String choice = scanner.nextLine();
 
         if(choice.equalsIgnoreCase("Y")) {
-            properties.setProperty("downloadFolder", askDownloadFolder().toString());
+            Path downloadFolder = askDownloadFolder();
+
+            properties.setProperty("downloadFolder", downloadFolder.toString());
 
         }
 
@@ -225,15 +208,33 @@ public class SetupManager {
 
         }
 
-        try{
+        saveProperties(properties);
+
+    }
+
+    private void loadProperties(Properties properties) {
+
+        try (FileInputStream input = new FileInputStream(CONFIG_FILE.toFile())) {
+            properties.load(input);                                                         // Loads the file
+
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to load configuration.", e);
+
+        }
+    }
+
+    private void saveProperties(Properties properties) {
+
+        try {
             Files.createDirectories(APP_DIRECTORY);
 
             try(FileOutputStream output = new FileOutputStream(CONFIG_FILE.toFile())) {
-                properties.store(output, "GalleryVault configuration");             // Saves the file
+                properties.store(output, "GalleryVault configuration");         // saves the file
 
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to save configuration. ", e);
+
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.tanzeel.galleryvault.downloader;
+package com.tanzeel.galleryvault.download;
 
 import com.tanzeel.galleryvault.config.Config;
 import com.tanzeel.galleryvault.exception.AuthenticationRequiredException;
@@ -44,26 +44,13 @@ public class GalleryDownloader {
         }
     }
 
-    private List<String> buildCommand(String url) {
-
-        List<String> command = new ArrayList<>();
-
-        command.add(config.getGalleryDlCommand());
-        command.add(DIRECTORY_OPTION);          // command for gallery-dl to identify
-        command.add(config.getDownloadPath().toString());
-        command.add(url);
-        // WILL BE ADDING MORE
-
-        return command;
-    }
-
-   private Process executeCommand(List<String> commands) throws IOException {
+    private Process executeCommand(List<String> commands) throws IOException {
 
         ProcessBuilder processBuilder = new ProcessBuilder(commands);      //Create the command (can throw IOException)
         processBuilder.redirectErrorStream(true);
 
         return processBuilder.start();                                     //Runs the command (can throw InterruptedException)
-   }
+    }
 
     private void validateResult(int exitCode, String output) throws DownloadFailedException {
 
@@ -97,5 +84,18 @@ public class GalleryDownloader {
         }
 
         return output.toString();
+    }
+
+    private List<String> buildCommand(String url) {
+
+        List<String> command = new ArrayList<>();
+
+        command.add(config.getGalleryDlCommand());
+        command.add(DIRECTORY_OPTION);          // command for gallery-dl to identify
+        command.add(config.getDownloadPath().toString());
+        command.add(url);
+        // WILL BE ADDING MORE
+
+        return command;
     }
 }
