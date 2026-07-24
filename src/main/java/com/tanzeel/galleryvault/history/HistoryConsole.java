@@ -24,7 +24,7 @@ public class HistoryConsole {
 
     private void runHistoryMenu() {
         while (true) {
-            showHistoryOptions();
+            showHistoryMenu();
             System.out.print("Choice: ");
 
             String choice = scanner.nextLine();
@@ -33,11 +33,14 @@ public class HistoryConsole {
 
             switch (choice) {
                 case "1" :  // View ALl
+                    System.out.println("================All Downloads================");
+
                     printHistory(history);
 
                     break;
 
                 case "2" :  // View Successful
+                    System.out.println("================Successful Downloads================");
 
                     List<DownloadRecord> success = new ArrayList<>();
 
@@ -52,6 +55,7 @@ public class HistoryConsole {
                     break;
 
                 case "3" :  // View Failed
+                    System.out.println("=============Failed Downloads=============");
 
                     List<DownloadRecord> failed = new ArrayList<>();
 
@@ -64,7 +68,11 @@ public class HistoryConsole {
 
                     break;
 
-                case "4" :  // Search by Platform
+                case "4" :  // Sort History
+                    sortHistory();
+                    break;
+
+                case "5" :  // Search by Platform
 
                     System.out.println("Available : ");
                     System.out.println("INSTAGRAM");
@@ -85,7 +93,8 @@ public class HistoryConsole {
                     printHistory(platform);
 
                     break;
-                case "5" :  // Clear History
+
+                case "6" :  // Clear History
                     System.out.print("Are you sure you want to clear all history? (y/n):");
                     String choose = scanner.nextLine();
 
@@ -99,7 +108,8 @@ public class HistoryConsole {
                     }else System.out.println("History is already empty.");
 
                     break;
-                case "6" :  // Menu
+
+                case "7" :  // Menu
                     return;
 
                 default:
@@ -108,16 +118,50 @@ public class HistoryConsole {
         }
     }                               // History Menu Logic
 
-    private void showHistoryOptions() {
-        System.out.println("================History================");
+    private void sortHistory() {
+        while(true) {
+
+            System.out.println("1. Newest First");
+            System.out.println("2. Oldest First");
+            System.out.println("3. Back");
+            System.out.println();
+
+            System.out.print("Choice:");
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1" :
+                    System.out.println("================Newest First================");
+
+                    printHistory(historyManager.getHistory(SortOrder.NEWEST_FIRST));
+                    break;
+
+                case "2" :
+                    System.out.println("================Oldest First================");
+
+                    printHistory(historyManager.getHistory(SortOrder.OLDEST_FIRST));
+                    break;
+
+                case "3" :
+                    return;
+
+                default :
+                    System.out.println("Invalid Option");
+            }
+        }
+    }                                   // sorting Menu Logic
+
+    private void showHistoryMenu() {
+        System.out.println("==================History==================");
         System.out.println();
 
         System.out.println("1. View All");
         System.out.println("2. Show Successful Downloads");
         System.out.println("3. Show Failed Downloads");
-        System.out.println("4. Search by Platform");
-        System.out.println("5. Clear History");
-        System.out.println("6. Menu");
+        System.out.println("4. Sort Downloads (Newest/Oldest)");
+        System.out.println("5. Search by Platform");
+        System.out.println("6. Clear History");
+        System.out.println("7. Menu");
         System.out.println();
     }                           // Show the "Options" available in History
 
@@ -130,7 +174,6 @@ public class HistoryConsole {
 
         int i = 1;
         for(DownloadRecord record : history) {
-            System.out.println("-------------------------------------------");
             System.out.println();
 
             System.out.println("Record - " + i++ + ":");
@@ -144,6 +187,7 @@ public class HistoryConsole {
                 System.out.println("Reason      :" + record.getReason());
             }
             System.out.println();
+            System.out.println("-------------------------------------------");
 
         }
     }     // Prints the required History

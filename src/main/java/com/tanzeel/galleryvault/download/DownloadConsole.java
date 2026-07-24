@@ -39,7 +39,7 @@ public class DownloadConsole {
     private void runDownload() {
         while(true) {
 
-            System.out.println("-------------------------------------------");
+            System.out.println("================Download Media================");
             System.out.println();
             System.out.println("Type 'menu' to go back to menu");
             System.out.println();

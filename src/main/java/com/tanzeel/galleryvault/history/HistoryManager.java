@@ -10,8 +10,8 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-
 
 public class HistoryManager {
     private static final Path APP_DIRECTORY = Paths.get(System.getProperty("user.home"), ".gallery-vault");
@@ -73,6 +73,20 @@ public class HistoryManager {
         } catch (IOException e) {
             throw new RuntimeException("Unable to read history.", e);
         }
+    }
+
+    public List<DownloadRecord> getHistory(SortOrder sortOrder) {
+        List<DownloadRecord> history = readHistory();
+
+        Comparator<DownloadRecord> comparator = Comparator.comparing(DownloadRecord::getTimeStamp);
+
+        if(sortOrder == SortOrder.NEWEST_FIRST) {
+            comparator = comparator.reversed();
+        }
+
+        history.sort(comparator);
+
+        return history;
     }
 
     public boolean clearHistory() {
