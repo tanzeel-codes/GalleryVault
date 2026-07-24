@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
 public class HistoryManager {
     private static final Path APP_DIRECTORY = Paths.get(System.getProperty("user.home"), ".gallery-vault");
     private static final Path HISTORY_FILE = APP_DIRECTORY.resolve("history.csv");

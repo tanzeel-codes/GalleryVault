@@ -11,25 +11,37 @@ public class DownloadRecord {
     private final String reason;
     private final Platform platform;
 
-    public DownloadRecord(Platform platform, LocalDateTime timestamp, DownloadStatus status, String url, String reason) {
+    public DownloadRecord(Platform platform,
+                          LocalDateTime timestamp,
+                          DownloadStatus status,
+                          String url,
+                          String reason
+    ) {
+
         this.platform = platform;
         this.timestamp = timestamp;
         this.status = status;
         this.url = url;
         this.reason = reason;
+
     }
+
     public String getUrl() {
         return url;
     }
+
     public LocalDateTime getTimeStamp() {
         return timestamp;
     }
+
     public DownloadStatus getStatus() {
         return status;
     }
+
     public String getReason() {
         return reason;
     }
+
     public Platform getPlatform() {
         return platform;
     }
