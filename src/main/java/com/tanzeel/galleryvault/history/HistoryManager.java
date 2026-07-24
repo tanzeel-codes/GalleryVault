@@ -1,6 +1,5 @@
 package com.tanzeel.galleryvault.history;
 
-import com.sun.nio.sctp.ShutdownNotification;
 import com.tanzeel.galleryvault.platform.Platform;
 
 import java.io.IOException;
@@ -11,9 +10,7 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.function.Predicate;
 
 public class HistoryManager {
     private static final Path APP_DIRECTORY = Paths.get(System.getProperty("user.home"), ".gallery-vault");
@@ -75,71 +72,6 @@ public class HistoryManager {
         } catch (IOException e) {
             throw new RuntimeException("Unable to read history.", e);
         }
-    }
-
-    public List<DownloadRecord> getHistory(SortOrder sortOrder) {
-
-        return filterHistory(
-                record -> true, sortOrder
-        );
-    }           // Get all history
-
-    public  List<DownloadRecord> getSuccessfulHistory(SortOrder sortOrder) {
-        return filterHistory(
-                record -> record.getStatus() == DownloadStatus.SUCCESS, sortOrder
-        );
-    }   // Get successful History
-
-    public List<DownloadRecord> getFailedHistory(SortOrder sortOrder) {
-        return filterHistory(
-                record -> record.getStatus() == DownloadStatus.FAILED, sortOrder
-        );
-    }       // Get Failed History
-
-    public List<DownloadRecord> getHistoryByPlatform(Platform platform, SortOrder sortOrder) {
-        return filterHistory(
-                record -> record.getPlatform() == platform, sortOrder
-        );
-    }   // Get History based on Platform
-
-    public List<DownloadRecord> searchHistory(String keyword, SortOrder sortOrder) {
-        String search = keyword.toLowerCase().trim();
-
-        return filterHistory(
-                record -> {
-                    boolean platformMatches = record.getPlatform().name().toLowerCase().contains(search);
-                    boolean statusMatches = record.getStatus().name().toLowerCase().contains(search);
-                    boolean urlMatches = record.getUrl().contains(search);
-                    return  platformMatches
-                            || statusMatches
-                            || urlMatches;
-                    },
-
-                sortOrder
-        );
-    }       // Search by keyword
-
-    private List<DownloadRecord> filterHistory(Predicate<DownloadRecord> condition, SortOrder sortOrder) {
-        List<DownloadRecord> history = readHistory();
-
-        List<DownloadRecord> filteredHistory = new ArrayList<>();
-
-        for(DownloadRecord record : history) {
-
-            if(condition.test(record)) {
-                filteredHistory.add(record);
-            }
-        }
-
-        Comparator<DownloadRecord> comparator = Comparator.comparing(DownloadRecord::getTimeStamp);
-
-        if(sortOrder == SortOrder.NEWEST_FIRST) {
-            comparator = comparator.reversed();
-        }
-
-        filteredHistory.sort(comparator);
-
-        return filteredHistory;
     }
 
     public boolean clearHistory() {
