@@ -1,5 +1,7 @@
 package com.tanzeel.galleryvault.history;
 
+import com.tanzeel.galleryvault.platform.Platform;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -23,78 +25,68 @@ public class HistoryConsole {
     }
 
     private void runHistoryMenu() {
+
         while (true) {
             showHistoryMenu();
             System.out.print("Choice: ");
 
             String choice = scanner.nextLine();
 
-            List<DownloadRecord> history = historyManager.readHistory();
-
             switch (choice) {
-                case "1" :  // View ALl
+
+                case "1" :  // VIEW ALL
                     System.out.println("================All Downloads================");
 
-                    printHistory(history);
+                    printHistory(historyManager.getHistory(sortOrder()));
 
                     break;
 
-                case "2" :  // View Successful
+                case "2" :  // VIEW SUCCESSFUL
                     System.out.println("================Successful Downloads================");
 
-                    List<DownloadRecord> success = new ArrayList<>();
-
-                    for(DownloadRecord record : history) {
-                        if(record.getStatus() == DownloadStatus.SUCCESS) {
-                            success.add(record);
-                        }
-                    }
-
-                    printHistory(success);
+                    printHistory(historyManager.getSuccessfulHistory(sortOrder()));
 
                     break;
 
-                case "3" :  // View Failed
+                case "3" :  // VIEW FAILED
                     System.out.println("=============Failed Downloads=============");
 
-                    List<DownloadRecord> failed = new ArrayList<>();
-
-                    for(DownloadRecord record : history) {
-                        if(record.getStatus() == DownloadStatus.FAILED) {
-                            failed.add(record);
-                        }
-                    }
-                    printHistory(failed);
+                    printHistory(historyManager.getFailedHistory(sortOrder()));
 
                     break;
 
-                case "4" :  // Sort History
-                    sortHistory();
-                    break;
-
-                case "5" :  // Search by Platform
+                case "4" :  // FILTER BY PLATFORM
+                    System.out.println("=============Platform=============");
 
                     System.out.println("Available : ");
-                    System.out.println("INSTAGRAM");
-                    System.out.println("REDDIT");
-                    System.out.println("YOUTUBE");
-                    System.out.println("X");
-                    System.out.println();
-                    System.out.print("Enter Platform: ");
-                    String platformName = scanner.nextLine();
 
-                    List<DownloadRecord> platform = new ArrayList<>();
-
-                    for(DownloadRecord record : history) {
-                        if(record.getPlatform().toString().equalsIgnoreCase(platformName)) {
-                            platform.add(record);
-                        }
+                    for(Platform platform : Platform.values()) {
+                        System.out.format("%-11s %n", platform);
                     }
-                    printHistory(platform);
+                    System.out.println();
+
+                    System.out.print("Enter Platform: ");
+
+                    Platform platformName = Platform.valueOf(scanner.nextLine().toUpperCase());
+
+                    printHistory(historyManager.getHistoryByPlatform(platformName, sortOrder()));
 
                     break;
 
-                case "6" :  // Clear History
+                case "5" :  // SEARCH
+                    System.out.println("=============Search=============");
+                    System.out.print("Enter keyword: ");
+                    String keyword = scanner.nextLine();
+
+                    if(keyword.isEmpty()) {
+                        System.out.println("Keyword cannot be empty.");
+                        break;
+                    }
+
+                    printHistory(historyManager.searchHistory(keyword, sortOrder()));
+                    break;
+
+                case "6" :  // CLEAR HISTORY
                     System.out.print("Are you sure you want to clear all history? (y/n):");
                     String choose = scanner.nextLine();
 
@@ -109,21 +101,34 @@ public class HistoryConsole {
 
                     break;
 
-                case "7" :  // Menu
+                case "7" :  // MENU
                     return;
 
                 default:
-                    System.out.println("Invalid Options");
+                    System.out.println("Invalid Option");
             }
         }
     }                               // History Menu Logic
 
-    private void sortHistory() {
+    private void showHistoryMenu() {
+        System.out.println("==================History==================");
+        System.out.println();
+
+        System.out.println("1. View All");
+        System.out.println("2. Successful Downloads");
+        System.out.println("3. Failed Downloads");
+        System.out.println("4. Filter By Platform");
+        System.out.println("5. Search");
+        System.out.println("6. Clear History");
+        System.out.println("7. Menu");
+        System.out.println();
+    }                           // Show the "Options" available in History
+
+    private SortOrder sortOrder() {
         while(true) {
 
             System.out.println("1. Newest First");
             System.out.println("2. Oldest First");
-            System.out.println("3. Back");
             System.out.println();
 
             System.out.print("Choice:");
@@ -133,37 +138,18 @@ public class HistoryConsole {
                 case "1" :
                     System.out.println("================Newest First================");
 
-                    printHistory(historyManager.getHistory(SortOrder.NEWEST_FIRST));
-                    break;
+                    return SortOrder.NEWEST_FIRST;
 
                 case "2" :
                     System.out.println("================Oldest First================");
 
-                    printHistory(historyManager.getHistory(SortOrder.OLDEST_FIRST));
-                    break;
-
-                case "3" :
-                    return;
+                    return SortOrder.OLDEST_FIRST;
 
                 default :
                     System.out.println("Invalid Option");
             }
         }
-    }                                   // sorting Menu Logic
-
-    private void showHistoryMenu() {
-        System.out.println("==================History==================");
-        System.out.println();
-
-        System.out.println("1. View All");
-        System.out.println("2. Show Successful Downloads");
-        System.out.println("3. Show Failed Downloads");
-        System.out.println("4. Sort Downloads (Newest/Oldest)");
-        System.out.println("5. Search by Platform");
-        System.out.println("6. Clear History");
-        System.out.println("7. Menu");
-        System.out.println();
-    }                           // Show the "Options" available in History
+    }               // sorting Menu Logic
 
     private void printHistory(List<DownloadRecord> history) {
 
@@ -183,9 +169,11 @@ public class HistoryConsole {
             System.out.println("Timestamp   :" + record.getTimeStamp());
             System.out.println("Status      :" + record.getStatus());
             System.out.println("URL         :" + record.getUrl());
+
             if(record.getReason() != null) {
                 System.out.println("Reason      :" + record.getReason());
             }
+
             System.out.println();
             System.out.println("-------------------------------------------");
 

@@ -101,7 +101,7 @@ public class GalleryVaultApp {
                     System.out.println("Invalid Option.");
             }
         }
-    }                   // Main Menu logic~
+    }             // Main Menu logic
 
     private void showMainMenu() {
         System.out.println("================GalleryVault================");
@@ -114,5 +114,5 @@ public class GalleryVaultApp {
         System.out.println("5. Exit");
         System.out.println();
 
-    }           // Show the "Options" available in menu
+    }           // Show "Options" available in menu
 }
