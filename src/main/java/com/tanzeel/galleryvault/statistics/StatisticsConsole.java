@@ -26,9 +26,9 @@ public class StatisticsConsole {
         System.out.println("================Statistics================");
         System.out.println();
 
-        System.out.println("Total Downloads          : " + statisticsRecord.getTotalDownloads());
-        System.out.println("Successful Downloads     : " + statisticsRecord.getSuccessfulDownloads());
-        System.out.println("Failed Downloads         : " + statisticsRecord.getFailedDownloads());
+        System.out.printf( "%-22s: %s%n", "Total Downloads", statisticsRecord.getTotalDownloads());
+        System.out.printf( "%-22s: %s%n", "Successful Downloads", statisticsRecord.getSuccessfulDownloads());
+        System.out.printf( "%-22s: %s%n", "Failed Downloads", statisticsRecord.getFailedDownloads());
         System.out.println();
 
         System.out.println("Downloads by Platform");
@@ -36,10 +36,9 @@ public class StatisticsConsole {
 
         for(Platform platform : Platform.values()) {
             System.out.format(
-                    "%-11s: %d%n",
-                    platform,
-                    statisticsRecord.getPlatformDownloads().get(platform));
+                    "%-11s: %d%n", platform, statisticsRecord.getPlatformDownloads().get(platform));
         }
+        System.out.println("-------------------------------------------");
         System.out.println();
     }
 }

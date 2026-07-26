@@ -60,12 +60,14 @@ public class ConfigurationConsole {
     }       // Show the "Options" available in configuration
 
     private void printConfiguration() {
-        System.out.println("-------------------------------------------");
+        System.out.println("================Configuration================");
         System.out.println();
 
-        System.out.println("Gallery-dl  : " + config.getGalleryDlCommand());
-        System.out.println("Download    : " + config.getDownloadPath());
-        System.out.println("Cookies     : " + config.getCookiesPath());
+        System.out.println("-------------------------------------------");
+        System.out.printf("%-12s: %s%n", "Gallery-dl", config.getGalleryDlCommand());
+        System.out.printf("%-12s: %s%n", "Download", config.getDownloadPath());
+        System.out.printf("%-12s: %s%n", "Cookies", config.getCookiesPath());
+        System.out.println("-------------------------------------------");
         System.out.println();
 
     }       // Prints the configuration

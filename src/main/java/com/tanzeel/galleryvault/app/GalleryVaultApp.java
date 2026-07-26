@@ -104,7 +104,9 @@ public class GalleryVaultApp {
     }             // Main Menu logic
 
     private void showMainMenu() {
-        System.out.println("================GalleryVault================");
+        System.out.println("══════════════════════════════════════════════");
+        System.out.println("               GalleryVault");
+        System.out.println("══════════════════════════════════════════════");
         System.out.println();
 
         System.out.println("1. Download");

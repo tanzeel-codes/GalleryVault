@@ -142,12 +142,16 @@ public class HistoryConsole {
 
             switch (choice) {
                 case "1" :
-                    System.out.println("================Newest First================");
+                    System.out.println("-------------------------------------------");
+                    System.out.println("Order By - Newest First");
+                    System.out.println("-------------------------------------------");
 
                     return SortOrder.NEWEST_FIRST;
 
                 case "2" :
-                    System.out.println("================Oldest First================");
+                    System.out.println("-------------------------------------------");
+                    System.out.println("Order by - Oldest First");
+                    System.out.println("-------------------------------------------");
 
                     return SortOrder.OLDEST_FIRST;
 
@@ -168,20 +172,22 @@ public class HistoryConsole {
         for(DownloadRecord record : history) {
             System.out.println();
 
-            System.out.println("Record - " + i++ + ":");
+            System.out.println("-------------------------------------------");
+            System.out.println("Record #" + i++);
+            System.out.println("-------------------------------------------");
             System.out.println();
 
-            System.out.println("Platform    :" + record.getPlatform());
-            System.out.println("Timestamp   :" + record.getTimeStamp());
-            System.out.println("Status      :" + record.getStatus());
-            System.out.println("URL         :" + record.getUrl());
+            System.out.printf("%-10s: %sn", "Platform", record.getPlatform());
+            System.out.printf("%-10s: %s%n", "Timestamp", record.getTimeStamp());
+            System.out.printf("%-10s: %s%n", "Status", record.getStatus());
+            System.out.printf("%-10s: %s%n", "URL", record.getUrl());
 
             if(record.getReason() != null) {
-                System.out.println("Reason      :" + record.getReason());
+            System.out.printf("%-10s: %s%n", "Reason", record.getReason());
             }
 
             System.out.println();
-            System.out.println("-------------------------------------------");
+            System.out.println("════════════════════════════════════════════");
 
         }
     }     // Prints the required History
