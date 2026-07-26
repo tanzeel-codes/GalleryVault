@@ -7,6 +7,9 @@ import com.tanzeel.galleryvault.history.HistoryManager;
 import com.tanzeel.galleryvault.platform.Platform;
 import com.tanzeel.galleryvault.platform.PlatformDetector;
 
+import java.nio.file.attribute.FileAttribute;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Scanner;
 
@@ -63,49 +66,53 @@ public class DownloadConsole {
             System.out.println("Downloading...");
             System.out.println();
 
-            LocalDateTime timestamp = LocalDateTime.now();
             Platform platform = platformDetector.detect(url);
-            DownloadRecord record = null;
+
+            DownloadStatus status = null;
+            String reason = null;
+
+            Instant start = Instant.now();        // Time starts
 
             try {
-                downloader.download(url);                                           // actual start
 
-                record = new DownloadRecord(
-                        platform,
-                        timestamp,
-                        DownloadStatus.SUCCESS,
-                        url,
-                        null
-                );
+                downloader.download(url);             // actual start
 
+                status = DownloadStatus.SUCCESS;
 
                 System.out.println("✓ Download Completed Successfully.");
 
             } catch (DownloadFailedException e) {
 
-                record = new DownloadRecord(
-                        platform,
-                        timestamp,
-                        DownloadStatus.FAILED,
-                        url,
-                        e.getMessage()
-                );
+                status = DownloadStatus.FAILED;
 
-                showError(e);
+                reason = e.getMessage();
+
+                System.out.println("✗ Download failed.");
+                System.out.println("Reason: " + e.getMessage());
 
             } finally {
+                Instant end = Instant.now();        // Time end
 
-                if (record != null) {
-                    historyManager.save(record);
-                }
+                Duration duration = Duration.between(start, end);
+
+                System.out.println("Time taken - " + historyManager.formatDuration(duration));
+
+                LocalDateTime timestamp = LocalDateTime.now();
+
+                DownloadRecord record = new DownloadRecord(
+                        platform,
+                        timestamp,
+                        status,
+                        url,
+                        duration,
+                        reason
+                );
+
+                historyManager.save(record);
+                System.out.println();
             }
         }
 
     }             // Download Menu Logic
-
-    private void showError(Exception e) {
-        System.out.println("✗ Download failed.");
-        System.out.print("Reason: " + e.getMessage());
-    }
 
 }

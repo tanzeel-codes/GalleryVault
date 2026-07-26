@@ -2,19 +2,22 @@ package com.tanzeel.galleryvault.history;
 
 import com.tanzeel.galleryvault.platform.Platform;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class DownloadRecord {
-    private final String url;
-    private final LocalDateTime timestamp;
-    private final DownloadStatus status;
-    private final String reason;
     private final Platform platform;
+    private final LocalDateTime timestamp;
+    private final String url;
+    private final DownloadStatus status;
+    private final Duration duration;
+    private final String reason;
 
     public DownloadRecord(Platform platform,
                           LocalDateTime timestamp,
                           DownloadStatus status,
                           String url,
+                          Duration duration,
                           String reason
     ) {
 
@@ -22,6 +25,7 @@ public class DownloadRecord {
         this.timestamp = timestamp;
         this.status = status;
         this.url = url;
+        this.duration = duration;
         this.reason = reason;
 
     }
@@ -30,7 +34,7 @@ public class DownloadRecord {
         return url;
     }
 
-    public LocalDateTime getTimeStamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
@@ -44,5 +48,9 @@ public class DownloadRecord {
 
     public Platform getPlatform() {
         return platform;
+    }
+
+    public Duration getDuration() {
+        return duration;
     }
 }

@@ -2,7 +2,7 @@ package com.tanzeel.galleryvault.history;
 
 import com.tanzeel.galleryvault.platform.Platform;
 
-import java.util.ArrayList;
+import java.time.Duration;
 import java.util.List;
 import java.util.Scanner;
 
@@ -177,10 +177,11 @@ public class HistoryConsole {
             System.out.println("-------------------------------------------");
             System.out.println();
 
-            System.out.printf("%-10s: %sn", "Platform", record.getPlatform());
-            System.out.printf("%-10s: %s%n", "Timestamp", record.getTimeStamp());
+            System.out.printf("%-10s: %s%n", "Platform", record.getPlatform());
+            System.out.printf("%-10s: %s%n", "Timestamp", record.getTimestamp());
             System.out.printf("%-10s: %s%n", "Status", record.getStatus());
             System.out.printf("%-10s: %s%n", "URL", record.getUrl());
+            System.out.printf("%-10s: %s%n", "Duration", historyManager.formatDuration(record.getDuration()));
 
             if(record.getReason() != null) {
             System.out.printf("%-10s: %s%n", "Reason", record.getReason());

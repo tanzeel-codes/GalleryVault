@@ -1,6 +1,5 @@
 package com.tanzeel.galleryvault.history;
 
-import com.sun.nio.sctp.ShutdownNotification;
 import com.tanzeel.galleryvault.platform.Platform;
 
 import java.io.IOException;
@@ -8,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,12 +22,13 @@ public class HistoryManager {
     public void save(DownloadRecord record) {
 
         String line = String.format(
-                "%s,%s,%s,%s,%s%n",
-                record.getPlatform(),
-                record.getTimeStamp(),
-                record.getStatus(),
-                record.getUrl(),
-                record.getReason() == null ? "" : record.getReason()
+                "%s,%s,%s,%s,%s,%s%n",
+                record.getPlatform().name(),    // part[0]
+                record.getTimestamp(),          // part[1]
+                record.getStatus().name(),      // part[2]
+                record.getUrl(),                // part[3]
+                record.getDuration(),           // part[4]
+                record.getReason() == null ? "" : record.getReason()    // part[5]
         );
 
         try {
@@ -52,18 +53,20 @@ public class HistoryManager {
 
                 String[] parts = line.split(",",-1);        // store each string separated by comma
 
-                // We will assign just the way we stored
-                Platform platform = Platform.valueOf(parts[0]);
+                // We will assign just the way we stored in csv
+                Platform platform       = Platform.valueOf(parts[0]);
                 LocalDateTime timestamp = LocalDateTime.parse(parts[1]);
-                DownloadStatus status = DownloadStatus.valueOf(parts[2]);
-                String url = parts[3];
-                String reason = parts[4].isEmpty() ? null : parts[4];
+                DownloadStatus status   = DownloadStatus.valueOf(parts[2]);
+                String url              = parts[3];
+                Duration duration       = Duration.parse(parts[4]);
+                String reason           = parts[5].isEmpty() ? null : parts[5];
 
                 DownloadRecord record = new DownloadRecord(
                         platform,
                         timestamp,
                         status,
                         url,
+                        duration,
                         reason
                 );
 
@@ -132,7 +135,7 @@ public class HistoryManager {
             }
         }
 
-        Comparator<DownloadRecord> comparator = Comparator.comparing(DownloadRecord::getTimeStamp);
+        Comparator<DownloadRecord> comparator = Comparator.comparing(DownloadRecord::getTimestamp);
 
         if(sortOrder == SortOrder.NEWEST_FIRST) {
             comparator = comparator.reversed();
@@ -141,6 +144,26 @@ public class HistoryManager {
         filteredHistory.sort(comparator);
 
         return filteredHistory;
+    }
+
+    public String formatDuration(Duration duration) {
+        long millis = duration.toMillis();
+
+        if(millis < 1000) {
+            return millis + "ms";
+        }
+
+        long seconds = duration.getSeconds();
+
+        if(seconds < 60) {
+            return String.format("%.1f sec", millis / 1000.0);
+        }
+
+        long minutes = seconds / 60;
+
+        long remainingSeconds = seconds % 60;
+
+        return minutes + " min" + remainingSeconds + " sec";
     }
 
     public boolean clearHistory() {
