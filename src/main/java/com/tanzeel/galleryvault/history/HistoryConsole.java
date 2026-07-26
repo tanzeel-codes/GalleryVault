@@ -3,12 +3,16 @@ package com.tanzeel.galleryvault.history;
 import com.tanzeel.galleryvault.platform.Platform;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
 public class HistoryConsole {
     private final Scanner scanner;
     private final HistoryManager historyManager;
+    private static final DateTimeFormatter TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("dd MMM, yyyy, hh:mm a");
 
     public HistoryConsole(
             HistoryManager historyManager,
@@ -178,7 +182,7 @@ public class HistoryConsole {
             System.out.println();
 
             System.out.printf("%-10s: %s%n", "Platform", record.getPlatform());
-            System.out.printf("%-10s: %s%n", "Timestamp", record.getTimestamp());
+            System.out.printf("%-10s: %s%n", "Timestamp", formatTimestamp(record.getTimestamp()));
             System.out.printf("%-10s: %s%n", "Status", record.getStatus());
             System.out.printf("%-10s: %s%n", "URL", record.getUrl());
             System.out.printf("%-10s: %s%n", "Duration", historyManager.formatDuration(record.getDuration()));
@@ -192,4 +196,8 @@ public class HistoryConsole {
 
         }
     }     // Prints the required History
+
+    private String formatTimestamp(LocalDateTime timestamp) {
+        return timestamp.format(TIME_FORMATTER);
+    }
 }
