@@ -109,7 +109,8 @@ public class HistoryManager {
                 record -> {
                     boolean platformMatches = record.getPlatform().name().toLowerCase().contains(search);
                     boolean statusMatches = record.getStatus().name().toLowerCase().contains(search);
-                    boolean urlMatches = record.getUrl().contains(search);
+                    boolean urlMatches = record.getUrl().toLowerCase().contains(search);
+
                     return  platformMatches
                             || statusMatches
                             || urlMatches;

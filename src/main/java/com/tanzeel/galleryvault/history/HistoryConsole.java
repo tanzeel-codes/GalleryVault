@@ -75,13 +75,19 @@ public class HistoryConsole {
 
                 case "5" :  // SEARCH
                     System.out.println("=============Search=============");
-                    System.out.print("Enter keyword: ");
-                    String keyword = scanner.nextLine();
 
-                    if(keyword.isEmpty()) {
+                    String keyword;
+                    while (true) {
+                        System.out.print("Enter keyword: ");
+                        keyword = scanner.nextLine().trim();
+
+                        if(!keyword.isEmpty()) {
+                            break;
+                        }
                         System.out.println("Keyword cannot be empty.");
-                        break;
+
                     }
+
 
                     printHistory(historyManager.searchHistory(keyword, sortOrder()));
                     break;
