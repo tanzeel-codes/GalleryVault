@@ -63,7 +63,7 @@ public class GalleryDownloader {
         }
 
         if(normalizedOutput.contains("403") || normalizedOutput.contains(AUTHENTICATION) || normalizedOutput.contains(FORBIDDEN)) {
-            throw new AuthenticationRequiredException("Authentication required. Please check your cookies\n\n" + output);
+            throw new AuthenticationRequiredException("Authentication required");
         }
 
         throw new DownloadFailedException("Download failed.\n\n" + output);

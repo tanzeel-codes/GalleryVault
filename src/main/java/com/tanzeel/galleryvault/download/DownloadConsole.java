@@ -87,8 +87,7 @@ public class DownloadConsole {
 
                 reason = e.getMessage();
 
-                System.out.println("✗ Download failed.");
-                System.out.println("Reason: " + e.getMessage());
+                showError(e);
 
             } finally {
                 Instant end = Instant.now();        // Time end
@@ -114,5 +113,20 @@ public class DownloadConsole {
         }
 
     }             // Download Menu Logic
+
+    private void showError(Exception e) {
+        System.out.println("========================================");
+        System.out.println("         ✗ Download failed.");
+        System.out.println("========================================");
+        System.out.println();
+
+        System.out.println("Reason: ");
+        System.out.println(e.getMessage());
+        System.out.println();
+
+        System.out.println("Suggestion: ");
+
+
+    }
 
 }
