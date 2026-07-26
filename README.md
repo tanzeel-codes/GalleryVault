@@ -212,13 +212,13 @@ Or execute the generated JAR file.
 ## Screenshots
 
 * Main Menu
-![img_1.png](img_1.png)
+![Main Menu](images/main-menu.png)
 * Download
-![img_2.png](img_2.png)
+![Download](images/download.png)
 * History
-![img_3.png](img_3.png)
+![History](images/history.png)
 * Statistics
-![img_4.png](img_4.png)
+![Statistics](images/statistics.png)
 
 ---
 
