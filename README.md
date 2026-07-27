@@ -201,11 +201,17 @@ mvn clean package
 
 ### Run
 
+Option 1 (Recommended)
+
+```bash
+java -jar target/GalleryVault-1.0.1.jar
+```
+
+Option 2
+
 ```bash
 mvn exec:java
 ```
-
-Or execute the generated JAR file.
 
 ---
 
