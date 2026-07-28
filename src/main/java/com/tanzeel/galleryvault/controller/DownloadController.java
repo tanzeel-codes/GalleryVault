@@ -3,6 +3,7 @@ package com.tanzeel.galleryvault.controller;
 import com.tanzeel.galleryvault.dto.DownloadRequest;
 import com.tanzeel.galleryvault.exception.DownloadFailedException;
 import com.tanzeel.galleryvault.service.DownloadService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +20,7 @@ public class DownloadController {
     }
 
     @PostMapping
-    public String download(@RequestBody DownloadRequest request) throws DownloadFailedException {
+    public String download(@Valid @RequestBody DownloadRequest request) throws DownloadFailedException {
         downloadService.download(request.getUrl());
 
         return "Download Started";
