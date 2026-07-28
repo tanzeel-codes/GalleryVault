@@ -3,6 +3,8 @@ package com.tanzeel.galleryvault.service;
 import com.tanzeel.galleryvault.config.Config;
 import com.tanzeel.galleryvault.exception.AuthenticationRequiredException;
 import com.tanzeel.galleryvault.exception.DownloadFailedException;
+import com.tanzeel.galleryvault.model.DownloadHistory;
+import com.tanzeel.galleryvault.model.DownloadStatus;
 import com.tanzeel.galleryvault.util.Platform;
 import com.tanzeel.galleryvault.util.PlatformDetector;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,12 +25,19 @@ public class DownloadService {
     private static final String UNSUPPORTED_URL = "unsupported url";
     private static final String DIRECTORY_OPTION = "--directory";
     private static final String COOKIES_OPTION = "--cookies";
+
     private final ConfigService configService;
     private final PlatformDetector platformDetector;
+    private final HistoryService historyService;
 
-    public DownloadService(PlatformDetector platformDetector, ConfigService configService) {
+    public DownloadService(PlatformDetector platformDetector,
+                           ConfigService configService,
+                           HistoryService historyService
+    ) {
         this.configService = configService;
         this.platformDetector = platformDetector;
+        this.historyService = historyService;
+
     }
 
     public void download(String url) throws DownloadFailedException {
@@ -46,6 +56,17 @@ public class DownloadService {
             String output = readStream(process.getInputStream());
 
             int exitCode = process.waitFor();                                           // Wait for the command to finish and return its "status"
+
+            DownloadHistory downloadHistory = new DownloadHistory(
+                    url,
+                    platform,
+                    DownloadStatus.SUCCESS,
+                    LocalDateTime.now()
+            );
+
+            if(exitCode == 0) {
+                historyService.save(downloadHistory);
+            }
 
             validateResult(exitCode, output);
 
