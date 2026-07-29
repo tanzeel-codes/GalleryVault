@@ -5,7 +5,7 @@ import com.tanzeel.galleryvault.exception.AuthenticationRequiredException;
 import com.tanzeel.galleryvault.exception.DownloadFailedException;
 import com.tanzeel.galleryvault.model.DownloadHistory;
 import com.tanzeel.galleryvault.model.DownloadStatus;
-import com.tanzeel.galleryvault.util.Platform;
+import com.tanzeel.galleryvault.model.Platform;
 import com.tanzeel.galleryvault.util.PlatformDetector;
 import org.springframework.stereotype.Service;
 

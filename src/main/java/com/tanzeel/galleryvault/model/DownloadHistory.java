@@ -1,7 +1,6 @@
 package com.tanzeel.galleryvault.model;
 
 
-import com.tanzeel.galleryvault.util.Platform;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

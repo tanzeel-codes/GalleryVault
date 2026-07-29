@@ -1,5 +1,6 @@
 package com.tanzeel.galleryvault.util;
 
+import com.tanzeel.galleryvault.model.Platform;
 import org.springframework.stereotype.Component;
 
 @Component

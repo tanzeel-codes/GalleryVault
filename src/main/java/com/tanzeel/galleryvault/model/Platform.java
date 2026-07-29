@@ -1,4 +1,4 @@
-package com.tanzeel.galleryvault.util;
+package com.tanzeel.galleryvault.model;
 
 public enum Platform {
     INSTAGRAM("Instagram"),
