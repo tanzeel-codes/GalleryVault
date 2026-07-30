@@ -15,4 +15,8 @@ public interface HistoryRepository extends JpaRepository<DownloadHistory, Long> 
     Page<DownloadHistory> findByPlatform(Platform platform, Pageable pageable);
 
     Page<DownloadHistory> findByUrlContaining(String keyword, Pageable pageable);
+
+    long countByStatus(DownloadStatus status);
+
+    long countByPlatform(Platform platform);
 }
