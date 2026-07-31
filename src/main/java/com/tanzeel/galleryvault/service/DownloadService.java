@@ -1,5 +1,9 @@
 package com.tanzeel.galleryvault.service;
 
+import com.tanzeel.galleryvault.download.DownloadOptions;
+import com.tanzeel.galleryvault.download.GalleryDlCommandBuilder;
+import com.tanzeel.galleryvault.download.ProcessExecutor;
+import com.tanzeel.galleryvault.download.ProcessResult;
 import com.tanzeel.galleryvault.exception.AuthenticationRequiredException;
 import com.tanzeel.galleryvault.exception.DownloadFailedException;
 import com.tanzeel.galleryvault.model.Configuration;
@@ -11,14 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,23 +26,29 @@ public class DownloadService {
     private static final String AUTHENTICATION = "authentication";
     private static final String FORBIDDEN = "forbidden";
     private static final String UNSUPPORTED_URL = "unsupported url";
-    private static final String DIRECTORY_OPTION = "--directory";
+    private static final String LOGIN_ERROR = "login";
+    private static final Logger logger = LoggerFactory.getLogger(DownloadService.class);
 //    private static final Path GALLERY_DL = Paths.get("tools", "gallery-dl.exe");
-    private static final String GALLERY_DL = "src/main/java/com/tanzeel/galleryvault/tools/gallery-dl.exe";
-    private static final String COOKIES_OPTION = "--cookies";
 
-    private final ConfigurationService configurationService;
     private final PlatformDetector platformDetector;
     private final HistoryService historyService;
-    private static final Logger logger = LoggerFactory.getLogger(DownloadService.class);
+    private final ConfigurationService configurationService;
+    private final GalleryDlCommandBuilder commandBuilder;
+    private final ProcessExecutor processExecutor;
 
-    public DownloadService(PlatformDetector platformDetector,
-                           ConfigurationService configurationService,
-                           HistoryService historyService
+    public DownloadService(
+            PlatformDetector platformDetector,
+            ConfigurationService configurationService,
+            HistoryService historyService,
+            GalleryDlCommandBuilder commandBuilder,
+            ProcessExecutor processExecutor
     ) {
+
         this.configurationService = configurationService;
         this.platformDetector = platformDetector;
         this.historyService = historyService;
+        this.commandBuilder = commandBuilder;
+        this.processExecutor = processExecutor;
 
     }
 
@@ -54,26 +58,67 @@ public class DownloadService {
 
         DownloadStatus status = DownloadStatus.FAILED;
 
-        int exitCode = -1;
+        Configuration configuration = configurationService.getConfiguration();
+
+        List<DownloadOptions> authenticationStrategies = List.of(
+                DownloadOptions.normal(),
+                DownloadOptions.browserCookies(),
+                DownloadOptions.cookiesFile()
+        );
+
+        AuthenticationRequiredException lastAuthException = null;
 
         try {
 
-            // will move the create command to different class (command builder)
-            List<String> command = buildCommand(url);
+            for(DownloadOptions options : authenticationStrategies) {
 
-            // move to different class (process Executer)
-            Process process = executeCommand(command);
+                if(options.isUsingCookiesPath() && configuration.getCookiesPath() == null) {    // if it goes for last attempt then we can break early if there is no cookies path
 
-            // will move to util (streamutil)
-            String output = readStream(process.getInputStream());
+                    lastAuthException = new  AuthenticationRequiredException("Authentication required. Please configure a cookies.txt file");
+                    break;
+                }
 
-            exitCode = process.waitFor();                                           // Wait for the command to finish and return its "status"
+                try {
 
-            status = exitCode == SUCCESS_EXIT_CODE ? DownloadStatus.SUCCESS : DownloadStatus.FAILED;
+                    attemptDownload(url, configuration, options);
 
-            validateResult(exitCode, output);
+                    status = DownloadStatus.SUCCESS;
 
-        } catch (IOException e) {
+                    return;
+
+                }
+                catch (AuthenticationRequiredException e) {
+                    lastAuthException = e;
+                }
+
+            }
+
+            throw lastAuthException;
+
+        }
+        finally {
+
+            try {
+                saveHistory(url, platform, status);
+
+            } catch (Exception e) {
+                logger.error("Unable to save download history", e);
+            }
+        }
+    }
+
+    private void attemptDownload(String url, Configuration configuration, DownloadOptions options) throws DownloadFailedException {
+
+        try {
+
+            List<String> command = commandBuilder.build(url, configuration, options);
+
+            ProcessResult result = processExecutor.execute(command);
+
+            validateResult(result.getExitCode(), result.getOutput());
+
+        }
+        catch (IOException e) {
 
             throw new DownloadFailedException("Unable to start gallery-dl", e);
 
@@ -83,72 +128,28 @@ public class DownloadService {
 
             throw new DownloadFailedException("Download Interrupted", e);
         }
-        finally {
-            try {
 
-                saveHistory(url, platform, status);
-            } catch (Exception e) {
-                logger.error("Unable to save history");
-            }
-        }
-    }
-
-    private List<String> buildCommand(String url) {
-
-        Configuration configuration = configurationService.getConfiguration();
-
-        List<String> command = new ArrayList<>();
-
-        command.add(GALLERY_DL);
-        // NEED TO ADD --COOKIES-FROM-BROWSER
-        // BROWSER NAME
-        command.add(DIRECTORY_OPTION);          // command for gallery-dl to identify
-        command.add(configuration.getDownloadDirectory());
-        command.add(url);
-
-        return command;
-    }
-
-    private Process executeCommand(List<String> commands) throws IOException {
-
-        ProcessBuilder processBuilder = new ProcessBuilder(commands);      //Create the command (can throw IOException)
-        processBuilder.redirectErrorStream(true);
-
-        return processBuilder.start();                                     //Runs the command (can throw InterruptedException)
-    }
-
-    private String readStream(InputStream stream) throws IOException {
-
-        StringBuilder output = new StringBuilder();
-
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
-            String line;
-
-            while((line = reader.readLine()) != null) {
-                output.append(line)
-                        .append(System.lineSeparator());
-
-            }
-        }
-
-        return output.toString();
     }
 
     private void validateResult(int exitCode, String output) throws DownloadFailedException {
 
-        if(exitCode == 0) return;
+        if(exitCode == SUCCESS_EXIT_CODE) return;
 
         String normalizedOutput = output.toLowerCase();
 
         if(normalizedOutput.contains(UNSUPPORTED_URL)) {
-            throw new DownloadFailedException("Unsupported URL.\n\n" + output);
+            throw new DownloadFailedException("Unsupported URL : " + output);
         }
 
-        if(normalizedOutput.contains("403") || normalizedOutput.contains(AUTHENTICATION) || normalizedOutput.contains(FORBIDDEN)) {
+        if(normalizedOutput.contains("403")
+                || normalizedOutput.contains(AUTHENTICATION)
+                || normalizedOutput.contains(FORBIDDEN)
+                || normalizedOutput.contains(LOGIN_ERROR)
+        ) {
             throw new AuthenticationRequiredException("Authentication required");
         }
 
-        throw new DownloadFailedException("Download failed.\n\n" + output);
+        throw new DownloadFailedException("Download failed. %n" + output);
     }
 
     private void saveHistory(String url, Platform platform, DownloadStatus status) {
