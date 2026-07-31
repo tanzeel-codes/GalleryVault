@@ -36,4 +36,10 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(error);
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleAlreadyConfiguredException(AlreadyConfiguredException ex) {
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
 }
