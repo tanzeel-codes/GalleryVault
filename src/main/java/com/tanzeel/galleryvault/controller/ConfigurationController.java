@@ -36,6 +36,7 @@ public class ConfigurationController {
         response.setDownloadDirectory(configuration.getDownloadDirectory());
         response.setBrowser(configuration.getBrowser());
         response.setCookiesPath(configuration.getCookiesPath());
+        response.setArchivePath(configuration.getArchivePath());
         response.setArchiveEnabled(configuration.isArchiveEnabled());
         response.setOverwriteExisting(configuration.isOverwriteExisting());
 

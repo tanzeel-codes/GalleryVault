@@ -1,21 +1,17 @@
 package com.tanzeel.galleryvault.service;
 
 import com.tanzeel.galleryvault.dto.ConfigurationRequest;
-import com.tanzeel.galleryvault.dto.ConfigurationResponse;
 import com.tanzeel.galleryvault.model.Browser;
 import com.tanzeel.galleryvault.model.Configuration;
 import com.tanzeel.galleryvault.repository.ConfigurationRepository;
+import com.tanzeel.galleryvault.util.ApplicationPaths;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 
 @Service
 public class ConfigurationService {
-
-    private static final Path DOWNLOAD_DIRECTORY = Paths.get(System.getProperty("user.home"), "GalleryVault");
-
     private final ConfigurationRepository configurationRepository;
 
     public ConfigurationService(ConfigurationRepository configurationRepository) {
@@ -27,9 +23,10 @@ public class ConfigurationService {
     private Configuration createDefaultConfiguration() {
         Configuration configuration = new Configuration();
 
-        configuration.setDownloadDirectory(DOWNLOAD_DIRECTORY.toString());
+        configuration.setDownloadDirectory(ApplicationPaths.downloads().toString());
         configuration.setBrowser(Browser.BRAVE);
         configuration.setCookiesPath(null);
+        configuration.setArchivePath(ApplicationPaths.archive().toString());
         configuration.setArchiveEnabled(true);
         configuration.setOverwriteExisting(false);
 
@@ -48,22 +45,11 @@ public class ConfigurationService {
         configuration.setDownloadDirectory(request.getDownloadDirectory());
         configuration.setBrowser(request.getBrowser());
         configuration.setCookiesPath(request.getCookiesPath());
+        configuration.setArchivePath(request.getArchivePath());
         configuration.setArchiveEnabled(request.isArchiveEnabled());
         configuration.setOverwriteExisting(request.isOverwriteExisting());
 
         return configurationRepository.save(configuration);
 
-    }
-
-    private ConfigurationResponse mapToResponse(Configuration configuration) {
-        ConfigurationResponse response = new ConfigurationResponse();
-
-        response.setDownloadDirectory(configuration.getDownloadDirectory());
-        response.setBrowser(configuration.getBrowser());
-        response.setCookiesPath(configuration.getCookiesPath());
-        response.setArchiveEnabled(configuration.isArchiveEnabled());
-        response.setOverwriteExisting(configuration.isOverwriteExisting());
-
-        return response;
     }
 }

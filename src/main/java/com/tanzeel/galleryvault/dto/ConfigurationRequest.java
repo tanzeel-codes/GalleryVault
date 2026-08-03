@@ -14,6 +14,8 @@ public class ConfigurationRequest {
 
     private String cookiesPath;
 
+    private String archivePath;
+
     private boolean archiveEnabled;
 
     private boolean overwriteExisting;
@@ -28,6 +30,10 @@ public class ConfigurationRequest {
 
     public String getCookiesPath() {
         return cookiesPath;
+    }
+
+    public String getArchivePath() {
+        return archivePath;
     }
 
     public boolean isArchiveEnabled() {

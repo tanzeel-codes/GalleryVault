@@ -10,6 +10,8 @@ public class ConfigurationResponse {
 
     private String cookiesPath;
 
+    private String archivePath;
+
     private boolean archiveEnabled;
 
     private boolean overwriteExisting;
@@ -19,10 +21,16 @@ public class ConfigurationResponse {
 
     }
 
-    public ConfigurationResponse(String downloadDirectory, Browser browser, String cookiesPath, boolean archiveEnabled, boolean overwriteExisting) {
+    public ConfigurationResponse(String downloadDirectory,
+                                 Browser browser,
+                                 String cookiesPath,
+                                 String archivePath,
+                                 boolean archiveEnabled,
+                                 boolean overwriteExisting) {
         this.downloadDirectory = downloadDirectory;
         this.browser = browser;
         this.cookiesPath = cookiesPath;
+        this.archivePath = archivePath;
         this.archiveEnabled = archiveEnabled;
         this.overwriteExisting = overwriteExisting;
     }
@@ -49,6 +57,14 @@ public class ConfigurationResponse {
 
     public void setCookiesPath(String cookiesPath) {
         this.cookiesPath = cookiesPath;
+    }
+
+    public String getArchivePath() {
+        return archivePath;
+    }
+
+    public void setArchivePath(String archivePath) {
+        this.archivePath = archivePath;
     }
 
     public boolean isArchiveEnabled() {
