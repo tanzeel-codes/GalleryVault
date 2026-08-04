@@ -1,8 +1,11 @@
 package com.tanzeel.galleryvault.controller;
 
 import com.tanzeel.galleryvault.dto.HistoryResponse;
+import com.tanzeel.galleryvault.mapper.HistoryMapper;
+import com.tanzeel.galleryvault.model.DownloadHistory;
 import com.tanzeel.galleryvault.model.DownloadStatus;
 import com.tanzeel.galleryvault.model.Platform;
+import com.tanzeel.galleryvault.repository.HistoryRepository;
 import com.tanzeel.galleryvault.service.HistoryService;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,8 +20,11 @@ public class HistoryController {
 
     private final HistoryService historyService;
 
-    public HistoryController(HistoryService historyService) {
+    private final HistoryMapper historyMapper;
+
+    public HistoryController(HistoryService historyService, HistoryMapper historyMapper) {
         this.historyService = historyService;
+        this.historyMapper = historyMapper;
     }
 
     @GetMapping("/all")
@@ -28,7 +34,9 @@ public class HistoryController {
             @RequestParam(defaultValue = "newest") String sort
     ) {
 
-        return historyService.getAllHistory(page, size, sort);
+        Page<DownloadHistory> historyPage = historyService.getAllHistory(page, size, sort);
+
+        return historyPage.map(historyMapper::toResponse);
     }
 
     @GetMapping("/status")
@@ -39,7 +47,9 @@ public class HistoryController {
             @RequestParam(defaultValue = "newest") String sort
     ) {
 
-        return historyService.getDownloadsByStatus(status, page, size, sort);
+        Page<DownloadHistory> historyPage = historyService.getDownloadsByStatus(status, page, size, sort);
+
+        return historyPage.map(historyMapper::toResponse);
     }
 
     @GetMapping("/platform")
@@ -50,7 +60,10 @@ public class HistoryController {
             @RequestParam(defaultValue = "newest") String sort
     ) {
 
-        return historyService.getDownloadsByPlatform(platform, page, size, sort);
+        Page<DownloadHistory> historyPage =  historyService.getDownloadsByPlatform(platform, page, size, sort);
+
+        return historyPage.map(historyMapper::toResponse);
+
     }
 
     @GetMapping("/search")
@@ -61,6 +74,9 @@ public class HistoryController {
             @RequestParam(defaultValue = "newest") String sort
     ) {
 
-        return historyService.getDownloadsByKeyword(keyword, page, size, sort);
+         Page<DownloadHistory> historyPage = historyService.getDownloadsByKeyword(keyword, page, size, sort);
+
+        return historyPage.map(historyMapper::toResponse);
+
     }
 }

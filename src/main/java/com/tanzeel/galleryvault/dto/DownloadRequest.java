@@ -1,5 +1,6 @@
 package com.tanzeel.galleryvault.dto;
 
+import com.tanzeel.galleryvault.model.DownloadJob;
 import jakarta.validation.constraints.NotBlank;
 
 public class DownloadRequest {

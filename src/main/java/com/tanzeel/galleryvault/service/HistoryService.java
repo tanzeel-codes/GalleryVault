@@ -1,6 +1,7 @@
 package com.tanzeel.galleryvault.service;
 
 import com.tanzeel.galleryvault.dto.HistoryResponse;
+import com.tanzeel.galleryvault.mapper.HistoryMapper;
 import com.tanzeel.galleryvault.model.DownloadHistory;
 import com.tanzeel.galleryvault.model.DownloadStatus;
 import com.tanzeel.galleryvault.model.Platform;
@@ -25,18 +26,6 @@ public class HistoryService {
         historyRepository.save(history);
     }
 
-    private HistoryResponse mapToResponse(DownloadHistory history) {
-        HistoryResponse response = new HistoryResponse();
-
-        response.setId(history.getId());
-        response.setUrl(history.getUrl());
-        response.setPlatform(history.getPlatform());
-        response.setStatus(history.getStatus());
-        response.setDownloadedAt(history.getDownloadedAt());
-
-        return response;
-    }
-
     private Sort createSort(String sort) {
 
         if(sort.equals("newest")) {
@@ -49,47 +38,43 @@ public class HistoryService {
 
     }
 
-    public Page<HistoryResponse> getAllHistory(int page, int size, String sort) {
+    public Page<DownloadHistory> getAllHistory(int page, int size, String sort) {
 
         Sort sorting = createSort(sort);
 
         Pageable pageable = PageRequest.of(page, size, sorting);
 
-        Page<DownloadHistory> historyPage = historyRepository.findAll(pageable);
+        return historyRepository.findAll(pageable);
 
-        return historyPage.map(this::mapToResponse);
     }
 
-    public Page<HistoryResponse> getDownloadsByStatus(DownloadStatus status, int page, int size, String sort) {
+    public Page<DownloadHistory> getDownloadsByStatus(DownloadStatus status, int page, int size, String sort) {
 
         Sort sorting = createSort(sort);
 
         Pageable pageable = PageRequest.of(page, size, sorting);
 
-        Page<DownloadHistory> historyPage = historyRepository.findByStatus(status, pageable);
+        return historyRepository.findByStatus(status, pageable);
 
-        return historyPage.map(this::mapToResponse);
     }
 
-    public Page<HistoryResponse> getDownloadsByPlatform(Platform platform, int page, int size, String sort) {
+    public Page<DownloadHistory> getDownloadsByPlatform(Platform platform, int page, int size, String sort) {
 
         Sort sorting = createSort(sort);
 
         Pageable pageable = PageRequest.of(page, size, sorting);
 
-        Page<DownloadHistory> historyPage = historyRepository.findByPlatform(platform, pageable);
+        return historyRepository.findByPlatform(platform, pageable);
 
-        return historyPage.map(this::mapToResponse);
     }
 
-    public Page<HistoryResponse> getDownloadsByKeyword(String keyword, int page, int size, String sort) {
+    public Page<DownloadHistory> getDownloadsByKeyword(String keyword, int page, int size, String sort) {
 
         Sort sorting = createSort(sort);
 
         Pageable pageable = PageRequest.of(page, size, sorting);
 
-        Page<DownloadHistory> historyPage = historyRepository.findByUrlContaining(keyword, pageable);
+        return historyRepository.findByUrlContaining(keyword, pageable);
 
-        return historyPage.map(this::mapToResponse);
     }
 }
