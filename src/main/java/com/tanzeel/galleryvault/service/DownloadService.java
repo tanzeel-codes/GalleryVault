@@ -1,9 +1,6 @@
 package com.tanzeel.galleryvault.service;
 
-import com.tanzeel.galleryvault.download.DownloadOptions;
-import com.tanzeel.galleryvault.download.GalleryDlCommandBuilder;
-import com.tanzeel.galleryvault.download.ProcessExecutor;
-import com.tanzeel.galleryvault.download.ProcessResult;
+import com.tanzeel.galleryvault.download.*;
 import com.tanzeel.galleryvault.exception.AuthenticationRequiredException;
 import com.tanzeel.galleryvault.exception.DownloadFailedException;
 import com.tanzeel.galleryvault.model.Configuration;
@@ -52,7 +49,7 @@ public class DownloadService {
 
     }
 
-    public void download(String url) throws DownloadFailedException {
+    public void download(String url, ProcessOutputListener listener) throws DownloadFailedException {
 
         Platform platform = platformDetector.detect(url);
 
@@ -80,7 +77,7 @@ public class DownloadService {
 
                 try {
 
-                    attemptDownload(url, configuration, options);
+                    attemptDownload(url, configuration, options, listener);
 
                     status = DownloadStatus.SUCCESS;
 
@@ -107,13 +104,13 @@ public class DownloadService {
         }
     }
 
-    private void attemptDownload(String url, Configuration configuration, DownloadOptions options) throws DownloadFailedException {
+    private void attemptDownload(String url, Configuration configuration, DownloadOptions options, ProcessOutputListener listener) throws DownloadFailedException {
 
         try {
 
             List<String> command = commandBuilder.build(url, configuration, options);
 
-            ProcessResult result = processExecutor.execute(command);
+            ProcessResult result = processExecutor.execute(command, listener);
 
             validateResult(result.getExitCode(), result.getOutput());
 

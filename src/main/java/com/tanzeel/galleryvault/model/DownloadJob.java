@@ -11,6 +11,8 @@ public class DownloadJob {
 
     private DownloadJobStatus status;
 
+    private int progress;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime completedAt;
@@ -20,6 +22,7 @@ public class DownloadJob {
         this.url = url;
         this.status = DownloadJobStatus.PENDING;
         this.createdAt = LocalDateTime.now();
+        this.progress = 0;
     }
 
     public UUID getId() {
@@ -44,5 +47,13 @@ public class DownloadJob {
 
     public void setCompletedAt(LocalDateTime completedAt) {
         this.completedAt = completedAt;
+    }
+
+    public int getProgress() {
+        return progress;
+    }
+
+    public void setProgress(int progress) {
+        this.progress = progress;
     }
 }

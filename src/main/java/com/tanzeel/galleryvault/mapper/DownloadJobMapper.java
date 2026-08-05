@@ -13,6 +13,7 @@ public class DownloadJobMapper {
         return new DownloadJobResponse(
                 job.getId(),
                 job.getStatus(),
+                job.getProgress(),
                 getStatusMessage(job.getStatus()),
                 job.getCreatedAt(),
                 job.getCompletedAt()

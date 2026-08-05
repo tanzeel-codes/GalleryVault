@@ -13,9 +13,12 @@ public class DownloadJobResponse {
 
     private DownloadJobStatus status;
 
+    private int progress;
+
     private String message;
 
     private LocalDateTime createdAt;
+
     private LocalDateTime completedAt;
 
     public DownloadJobResponse() {
@@ -25,13 +28,16 @@ public class DownloadJobResponse {
     public DownloadJobResponse(
             UUID id,
             DownloadJobStatus status,
+            int progress,
             String message,
             LocalDateTime createdAt,
             LocalDateTime completedAt
+
     ) {
 
         this.id = id;
         this.status = status;
+        this.progress = progress;
         this.message = message;
         this.createdAt = createdAt;
         this.completedAt = completedAt;
@@ -50,6 +56,14 @@ public class DownloadJobResponse {
         this.status = status;
     }
 
+    public int getProgress() {
+        return progress;
+    }
+
+    public void setProgress(int progress) {
+        this.progress = progress;
+    }
+
     public String getMessage() {
         return message;
     }
@@ -61,7 +75,6 @@ public class DownloadJobResponse {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-
 
     public LocalDateTime getCompletedAt() {
         return completedAt;

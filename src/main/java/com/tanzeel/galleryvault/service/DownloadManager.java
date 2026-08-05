@@ -1,5 +1,6 @@
 package com.tanzeel.galleryvault.service;
 
+import com.tanzeel.galleryvault.download.ProcessOutputListener;
 import com.tanzeel.galleryvault.dto.DownloadJobResponse;
 import com.tanzeel.galleryvault.exception.DownloadFailedException;
 import com.tanzeel.galleryvault.exception.DownloadJobNotFoundException;
@@ -38,7 +39,9 @@ public class DownloadManager {
 
             try{
 
-                downloadService.download(url);
+                downloadService.download(url, line -> {
+                    // For future progress/status updates.
+                });
 
                 job.setStatus(DownloadJobStatus.COMPLETED);
 

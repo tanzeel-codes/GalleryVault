@@ -11,7 +11,7 @@ import java.util.List;
 @Component
 public class ProcessExecutor {
 
-    public ProcessResult execute(List<String> command) throws IOException, InterruptedException {
+    public ProcessResult execute(List<String> command, ProcessOutputListener listener) throws IOException, InterruptedException {
 
         ProcessBuilder builder = new ProcessBuilder(command);           //Create the command (can throw IOException)
 
@@ -19,7 +19,7 @@ public class ProcessExecutor {
 
         Process process = builder.start();                                     //Runs the command (can throw InterruptedException)
 
-        String output = readOutput(process.getInputStream());
+        String output = readOutput(process.getInputStream(), listener);
 
         int exitCode = process.waitFor();                                           // Wait for the command to finish and return its "status"
 
@@ -27,7 +27,7 @@ public class ProcessExecutor {
 
     }
 
-    private String readOutput(InputStream stream) throws IOException {
+    private String readOutput(InputStream stream, ProcessOutputListener listener) throws IOException {
 
         StringBuilder output = new StringBuilder();
 
@@ -35,6 +35,11 @@ public class ProcessExecutor {
             String line;
 
             while((line = reader.readLine()) != null) {
+
+                if(listener != null) {
+                    listener.onOutput(line);
+                }
+
                 output.append(line)
                         .append(System.lineSeparator());
 
