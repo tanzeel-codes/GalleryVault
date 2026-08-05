@@ -13,34 +13,36 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DownloadFailedException.class)
     public ResponseEntity<ErrorResponse> handleDownloadFailedException(DownloadFailedException ex) {
 
-        ErrorResponse error = new ErrorResponse(
-                ex.getMessage(),
-                HttpStatus.INTERNAL_SERVER_ERROR.value()
-        );
+        return buildResponse(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    @ExceptionHandler(AuthenticationRequiredException.class)
+    public ResponseEntity<ErrorResponse> handleAuthenticationRequiredException(AuthenticationRequiredException ex) {
+
+        return buildResponse(
+                ex.getMessage(),
+                HttpStatus.UNAUTHORIZED
+        );
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
 
-        String message = ex
-                .getBindingResult()
-                .getFieldError()
-                .getDefaultMessage();
+        String message = "Validation failed";
 
-        ErrorResponse error = new ErrorResponse(
-                message,
-                HttpStatus.BAD_REQUEST.value()
-        );
+        if(ex.getBindingResult().getFieldError() != null) {
+            message = ex.getBindingResult()
+                    .getFieldError()
+                    .getDefaultMessage();
+        }
 
-        return ResponseEntity.badRequest().body(error);
+        return buildResponse(message, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> handleAlreadyConfiguredException(AlreadyConfiguredException ex) {
+    @ExceptionHandler(AlreadyConfiguredException.class)
+    public ResponseEntity<ErrorResponse> handleAlreadyConfiguredException(AlreadyConfiguredException ex) {
 
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+        return buildResponse(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(DownloadJobNotFoundException.class)
@@ -52,5 +54,23 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleException() {
+        return buildResponse(
+                "Unexpected server error",
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
+    }
+
+    private ResponseEntity<ErrorResponse> buildResponse(String message, HttpStatus status) {
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                message,
+                status.value()
+        );
+
+        return ResponseEntity.status(status).body(errorResponse);
     }
 }
