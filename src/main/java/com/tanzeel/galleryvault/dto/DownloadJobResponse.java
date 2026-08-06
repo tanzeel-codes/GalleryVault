@@ -1,5 +1,6 @@
 package com.tanzeel.galleryvault.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tanzeel.galleryvault.model.DownloadJobStatus;
 
@@ -17,8 +18,10 @@ public class DownloadJobResponse {
 
     private String message;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime completedAt;
 
     public DownloadJobResponse() {

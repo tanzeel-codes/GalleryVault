@@ -1,5 +1,6 @@
 package com.tanzeel.galleryvault.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.tanzeel.galleryvault.model.DownloadStatus;
 import com.tanzeel.galleryvault.model.Platform;
 
@@ -8,9 +9,14 @@ import java.time.LocalDateTime;
 public class HistoryResponse {
 
     private Long id;
+
     private String url;
+
     private Platform platform;
+
     private DownloadStatus status;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime downloadedAt;
 
     public HistoryResponse() {
