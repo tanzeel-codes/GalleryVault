@@ -1,6 +1,7 @@
 package com.tanzeel.galleryvault.download;
 
 import com.tanzeel.galleryvault.model.Configuration;
+import com.tanzeel.galleryvault.util.ApplicationPaths;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class GalleryDlCommandBuilder {
 
         List<String> command = new ArrayList<>();
 
-        command.add(GALLERY_DL);
+        command.add(ApplicationPaths.galleryDl().toString());
 
         if(options.isUsingBrowserCookies()) {    // will try --cookies-from-browser "browserName"
             command.add(COOKIES_FROM_BROWSER);

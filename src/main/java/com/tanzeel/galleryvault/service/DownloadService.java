@@ -3,6 +3,7 @@ package com.tanzeel.galleryvault.service;
 import com.tanzeel.galleryvault.download.*;
 import com.tanzeel.galleryvault.exception.AuthenticationRequiredException;
 import com.tanzeel.galleryvault.exception.DownloadFailedException;
+import com.tanzeel.galleryvault.installer.GalleryDlInstaller;
 import com.tanzeel.galleryvault.model.Configuration;
 import com.tanzeel.galleryvault.model.DownloadHistory;
 import com.tanzeel.galleryvault.model.DownloadStatus;
@@ -32,13 +33,15 @@ public class DownloadService {
     private final ConfigurationService configurationService;
     private final GalleryDlCommandBuilder commandBuilder;
     private final ProcessExecutor processExecutor;
+    private final GalleryDlInstaller galleryDlInstaller;
 
     public DownloadService(
             PlatformDetector platformDetector,
             ConfigurationService configurationService,
             HistoryService historyService,
             GalleryDlCommandBuilder commandBuilder,
-            ProcessExecutor processExecutor
+            ProcessExecutor processExecutor,
+            GalleryDlInstaller galleryDlInstaller
     ) {
 
         this.configurationService = configurationService;
@@ -46,10 +49,13 @@ public class DownloadService {
         this.historyService = historyService;
         this.commandBuilder = commandBuilder;
         this.processExecutor = processExecutor;
+        this.galleryDlInstaller = galleryDlInstaller;
 
     }
 
     public void download(String url, ProcessOutputListener listener) throws DownloadFailedException {
+
+        galleryDlInstaller.installIfMissing();
 
         Platform platform = platformDetector.detect(url);
 

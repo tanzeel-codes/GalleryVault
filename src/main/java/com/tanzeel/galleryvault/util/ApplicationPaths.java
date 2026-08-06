@@ -25,6 +25,24 @@ public final class ApplicationPaths {
 
     }   // CREATE DOWNLOAD SUBDIRECTORY INSIDE HOME
 
+    public static Path tools() {
+        Path tools = home().resolve("Tools");
+
+        createDirectory(tools);
+
+        return tools;
+    }
+
+    public static Path galleryDl() {
+
+        return tools().resolve("gallery-dl.exe");
+
+    }
+
+    public static Path galleryDlVersion() {
+        return tools().resolve("gallery-dl.version");
+    }
+
     public static Path archive() {
 
         return home().resolve("archive.txt");

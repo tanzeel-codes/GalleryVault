@@ -19,7 +19,6 @@ public class ConfigurationService {
         this.configurationRepository = configurationRepository;
     }
 
-
     private Configuration createDefaultConfiguration() {
         Configuration configuration = new Configuration();
 
