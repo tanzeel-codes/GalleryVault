@@ -1,5 +1,6 @@
 package com.tanzeel.galleryvault.controller;
 
+import com.tanzeel.galleryvault.dto.DeleteHistoryResponse;
 import com.tanzeel.galleryvault.dto.HistoryResponse;
 import com.tanzeel.galleryvault.mapper.HistoryMapper;
 import com.tanzeel.galleryvault.model.DownloadHistory;
@@ -8,10 +9,7 @@ import com.tanzeel.galleryvault.model.Platform;
 import com.tanzeel.galleryvault.repository.HistoryRepository;
 import com.tanzeel.galleryvault.service.HistoryService;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -49,5 +47,15 @@ public class HistoryController {
         );
 
         return historyPage.map(historyMapper::toResponse);
+    }
+
+    @DeleteMapping
+    public DeleteHistoryResponse deleteHistory(
+            @RequestParam(required = false) DownloadStatus status,
+            @RequestParam(required = false) Platform platform
+    ) {
+
+        return historyService.deleteHistory(status, platform);
+
     }
 }
