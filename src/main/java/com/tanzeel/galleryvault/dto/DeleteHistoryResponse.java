@@ -15,7 +15,7 @@ public class DeleteHistoryResponse {
         return message;
     }
 
-    public Long getDeletedRecords() {
+    public long getDeletedRecords() {
         return deletedRecords;
     }
 

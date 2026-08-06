@@ -24,8 +24,8 @@ public class DownloadService {
     private static final String FORBIDDEN = "forbidden";
     private static final String UNSUPPORTED_URL = "unsupported url";
     private static final String LOGIN_ERROR = "login";
+    private static final String HTTP_403 = "403";
     private static final Logger logger = LoggerFactory.getLogger(DownloadService.class);
-//    private static final Path GALLERY_DL = Paths.get("tools", "gallery-dl.exe");
 
     private final PlatformDetector platformDetector;
     private final HistoryService historyService;
@@ -138,7 +138,7 @@ public class DownloadService {
             throw new DownloadFailedException("Unsupported URL : " + output);
         }
 
-        if(normalizedOutput.contains("403")
+        if(normalizedOutput.contains(HTTP_403)
                 || normalizedOutput.contains(AUTHENTICATION)
                 || normalizedOutput.contains(FORBIDDEN)
                 || normalizedOutput.contains(LOGIN_ERROR)
@@ -146,7 +146,7 @@ public class DownloadService {
             throw new AuthenticationRequiredException("Authentication required");
         }
 
-        throw new DownloadFailedException("Download failed. %n" + output);
+        throw new DownloadFailedException("Download failed. " + output);
     }
 
     private void saveHistory(String url, Platform platform, DownloadStatus status) {

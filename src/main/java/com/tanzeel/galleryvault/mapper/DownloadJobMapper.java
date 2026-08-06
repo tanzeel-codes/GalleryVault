@@ -24,10 +24,10 @@ public class DownloadJobMapper {
 
         return switch (status) {
             case PENDING -> "Download is waiting to start.";
-            case DOWNLOADING -> "Download is in progress";
-            case COMPLETED -> "Download completed successfully";
-            case FAILED -> "Download failed";
-            case CANCELLED -> "Download was cancelled";
+            case DOWNLOADING -> "Download in progress.";
+            case COMPLETED -> "Download completed successfully.";
+            case FAILED -> "Download failed.";
+            case CANCELLED -> "Download was cancelled.";
         };
     }
 

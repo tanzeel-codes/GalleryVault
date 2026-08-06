@@ -1,7 +1,5 @@
 package com.tanzeel.galleryvault.service;
 
-import com.tanzeel.galleryvault.download.ProcessOutputListener;
-import com.tanzeel.galleryvault.dto.DownloadJobResponse;
 import com.tanzeel.galleryvault.exception.DownloadFailedException;
 import com.tanzeel.galleryvault.exception.DownloadJobNotFoundException;
 import com.tanzeel.galleryvault.model.DownloadJob;
@@ -61,7 +59,8 @@ public class DownloadManager {
         return job;
     }
 
-    public void scheduleCleanup(DownloadJob job) {
+    private void scheduleCleanup(DownloadJob job) {
+
         cleanupScheduler.schedule(() ->
                 jobs.remove(job.getId()),
                 5,

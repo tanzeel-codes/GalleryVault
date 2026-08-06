@@ -40,7 +40,7 @@ public class ConfigurationService {
 
     public Configuration updateConfiguration(ConfigurationRequest request) {
 
-        Configuration configuration = getConfiguration();       // we didn't use new configuration because it would create new record with id 2 making the table having  entry making the method findFirstBy useless
+        Configuration configuration = getConfiguration();
 
         configuration.setDownloadDirectory(request.getDownloadDirectory());
         configuration.setBrowser(request.getBrowser());

@@ -9,6 +9,6 @@ import java.util.Optional;
 @Repository
 public interface ConfigurationRepository extends JpaRepository<Configuration, Long> {
 
-    Optional<Configuration> findFirstBy();      // return the very first record from table
+    Optional<Configuration> findFirstBy();
 
 }

@@ -12,7 +12,7 @@ import java.util.Map;
 @Service
 public class StatisticsService {
 
-    final HistoryRepository historyRepository;
+    private final HistoryRepository historyRepository;
 
     public StatisticsService(HistoryRepository historyRepository) {
         this.historyRepository = historyRepository;

@@ -6,9 +6,10 @@ import com.tanzeel.galleryvault.mapper.HistoryMapper;
 import com.tanzeel.galleryvault.model.DownloadHistory;
 import com.tanzeel.galleryvault.model.DownloadStatus;
 import com.tanzeel.galleryvault.model.Platform;
-import com.tanzeel.galleryvault.repository.HistoryRepository;
+import com.tanzeel.galleryvault.model.SortOrder;
 import com.tanzeel.galleryvault.service.HistoryService;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -26,10 +27,10 @@ public class HistoryController {
     }
 
     @GetMapping
-    public Page<HistoryResponse> getHistory(
+    public ResponseEntity<Page<HistoryResponse>> getHistory(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "newest") String sort,
+            @RequestParam(defaultValue = "NEWEST") SortOrder sort,
 
             @RequestParam(required = false) DownloadStatus status,
             @RequestParam(required = false) Platform platform,
@@ -46,16 +47,16 @@ public class HistoryController {
                 sort
         );
 
-        return historyPage.map(historyMapper::toResponse);
+        return ResponseEntity.ok(historyPage.map(historyMapper::toResponse));
     }
 
     @DeleteMapping
-    public DeleteHistoryResponse deleteHistory(
+    public ResponseEntity<DeleteHistoryResponse> deleteHistory(
             @RequestParam(required = false) DownloadStatus status,
             @RequestParam(required = false) Platform platform
     ) {
 
-        return historyService.deleteHistory(status, platform);
+        return ResponseEntity.ok(historyService.deleteHistory(status, platform));
 
     }
 }

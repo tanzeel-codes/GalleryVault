@@ -3,7 +3,6 @@ package com.tanzeel.galleryvault.controller;
 import com.tanzeel.galleryvault.dto.ConfigurationRequest;
 import com.tanzeel.galleryvault.dto.ConfigurationResponse;
 import com.tanzeel.galleryvault.mapper.ConfigurationMapper;
-import com.tanzeel.galleryvault.model.Configuration;
 import com.tanzeel.galleryvault.service.ConfigurationService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -20,13 +19,13 @@ public class ConfigurationController {
         this.configurationMapper = configurationMapper;
     }
 
-    @GetMapping("/show")
+    @GetMapping
     public ConfigurationResponse getConfiguration() {
 
         return configurationMapper.toResponse(configurationService.getConfiguration());
     }
 
-    @PutMapping("/update")
+    @PutMapping
     public ConfigurationResponse updateConfiguration(@Valid @RequestBody ConfigurationRequest request) {
 
         return configurationMapper.toResponse(configurationService.updateConfiguration(request));
