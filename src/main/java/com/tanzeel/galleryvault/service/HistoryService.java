@@ -1,15 +1,15 @@
 package com.tanzeel.galleryvault.service;
 
-import com.tanzeel.galleryvault.dto.HistoryResponse;
-import com.tanzeel.galleryvault.mapper.HistoryMapper;
 import com.tanzeel.galleryvault.model.DownloadHistory;
 import com.tanzeel.galleryvault.model.DownloadStatus;
 import com.tanzeel.galleryvault.model.Platform;
 import com.tanzeel.galleryvault.repository.HistoryRepository;
+import com.tanzeel.galleryvault.specification.HistorySpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 
@@ -38,43 +38,33 @@ public class HistoryService {
 
     }
 
-    public Page<DownloadHistory> getAllHistory(int page, int size, String sort) {
-
-        Sort sorting = createSort(sort);
-
-        Pageable pageable = PageRequest.of(page, size, sorting);
-
-        return historyRepository.findAll(pageable);
-
-    }
-
-    public Page<DownloadHistory> getDownloadsByStatus(DownloadStatus status, int page, int size, String sort) {
-
-        Sort sorting = createSort(sort);
+    public Page<DownloadHistory> getHistory(
+            DownloadStatus status,
+            Platform platform,
+            String keyword,
+            int page,
+            int size,
+            String sort
+    ) {
+        Sort sorting  = createSort(sort);
 
         Pageable pageable = PageRequest.of(page, size, sorting);
 
-        return historyRepository.findByStatus(status, pageable);
+        Specification<DownloadHistory> specification = Specification.unrestricted();
 
-    }
+        if(status != null) {
+            specification = specification.and(HistorySpecification.hasStatus(status));
+        }
 
-    public Page<DownloadHistory> getDownloadsByPlatform(Platform platform, int page, int size, String sort) {
+        if(platform != null) {
+            specification = specification.and(HistorySpecification.hasPlatform(platform));
+        }
 
-        Sort sorting = createSort(sort);
+        if(keyword != null && !keyword.isBlank()) {
+            specification = specification.and(HistorySpecification.containsKeyword(keyword));
+        }
 
-        Pageable pageable = PageRequest.of(page, size, sorting);
-
-        return historyRepository.findByPlatform(platform, pageable);
-
-    }
-
-    public Page<DownloadHistory> getDownloadsByKeyword(String keyword, int page, int size, String sort) {
-
-        Sort sorting = createSort(sort);
-
-        Pageable pageable = PageRequest.of(page, size, sorting);
-
-        return historyRepository.findByUrlContaining(keyword, pageable);
+        return historyRepository.findAll(specification, pageable);
 
     }
 }

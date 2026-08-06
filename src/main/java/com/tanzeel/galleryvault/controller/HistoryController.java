@@ -27,56 +27,27 @@ public class HistoryController {
         this.historyMapper = historyMapper;
     }
 
-    @GetMapping("/all")
-    public Page<HistoryResponse> getAllHistory(
+    @GetMapping
+    public Page<HistoryResponse> getHistory(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "newest") String sort
+            @RequestParam(defaultValue = "newest") String sort,
+
+            @RequestParam(required = false) DownloadStatus status,
+            @RequestParam(required = false) Platform platform,
+            @RequestParam(required = false) String keyword
+
     ) {
 
-        Page<DownloadHistory> historyPage = historyService.getAllHistory(page, size, sort);
+        Page<DownloadHistory> historyPage = historyService.getHistory(
+                status,
+                platform,
+                keyword,
+                page,
+                size,
+                sort
+        );
 
         return historyPage.map(historyMapper::toResponse);
-    }
-
-    @GetMapping("/status")
-    public Page<HistoryResponse> getByStatus(
-            @RequestParam DownloadStatus status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "newest") String sort
-    ) {
-
-        Page<DownloadHistory> historyPage = historyService.getDownloadsByStatus(status, page, size, sort);
-
-        return historyPage.map(historyMapper::toResponse);
-    }
-
-    @GetMapping("/platform")
-    public Page<HistoryResponse> getByPlatform(
-            @RequestParam Platform platform,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "newest") String sort
-    ) {
-
-        Page<DownloadHistory> historyPage =  historyService.getDownloadsByPlatform(platform, page, size, sort);
-
-        return historyPage.map(historyMapper::toResponse);
-
-    }
-
-    @GetMapping("/search")
-    public Page<HistoryResponse> getByKeyword(
-            @RequestParam String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "newest") String sort
-    ) {
-
-         Page<DownloadHistory> historyPage = historyService.getDownloadsByKeyword(keyword, page, size, sort);
-
-        return historyPage.map(historyMapper::toResponse);
-
     }
 }
